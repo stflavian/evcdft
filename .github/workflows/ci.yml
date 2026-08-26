@@ -30,22 +30,11 @@ jobs:
       with:
         version: ${{ matrix.version }}
         
-    - name: Cache Julia packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.julia
-        key: ${{ runner.os }}-julia-${{ matrix.version }}-${{ hashFiles('Project.toml', 'Manifest.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-julia-${{ matrix.version }}-
-          ${{ runner.os }}-julia-
-    
-    - name: Install dependencies
+    - name: Install FFTW package
       run: |
         julia --project=@. -e '
           using Pkg
-          Pkg.resolve()
-          Pkg.instantiate()
-          Pkg.precompile()
+          Pkg.add("FFTW")
         '
         
     - name: Run test suite

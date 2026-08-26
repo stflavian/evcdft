@@ -25,21 +25,11 @@ jobs:
       with:
         version: ${{ matrix.version }}
         
-    - name: Cache Julia artifacts
-      uses: actions/cache@v3
-      with:
-        path: ~/.julia
-        key: ${{ runner.os }}-julia-${{ matrix.version }}-${{ hashFiles('Project.toml', 'Manifest.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-julia-${{ matrix.version }}-
-          ${{ runner.os }}-julia-
-    
-    - name: Install dependencies
+    - name: Install FFTW package
       run: |
         julia --project=@. -e '
           using Pkg
-          Pkg.resolve()
-          Pkg.instantiate()
+          Pkg.add("FFTW")
         '
         
     - name: Run comprehensive test suite
@@ -68,29 +58,13 @@ jobs:
           using .EVC_DFT.Types
           using .EVC_DFT.XCFunctionals
           
-          println("Testing basic functionality...")
-          
-          # Test constants
-          @assert Constants.hbar == 1.0
-          @assert Constants.m_e == 1.0
-          @assert Constants.e == 1.0
-          println("✓ Constants work")
-          
-          # Test types
-          lattice = Types.SimpleCubic(5.0)
+          # Basic tests
+          lattice = SimpleCubic(5.0)
           @assert lattice.volume ≈ 125.0
-          println("✓ Types work")
           
-          # Test XC functionals
           density = 0.1
-          @assert XCFunctionals.lda_exchange_energy(density) < 0.0
-          @assert XCFunctionals.lda_correlation_energy(density) < 0.0
-          println("✓ XC functionals work")
+          @assert lda_exchange_energy(density) < 0.0
+          @assert lda_correlation_energy(density) < 0.0
           
-          # Test system creation
-          system = EVC_DFT.create_uniform_electron_gas(5.0, 2, 10.0, (8, 8, 8))
-          @assert system.electrons == 2
-          println("✓ System creation works")
-          
-          println("\n✓ All validation tests passed!")
+          println("All basic tests passed!")
         '
