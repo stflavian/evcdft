@@ -3,12 +3,11 @@ uuid = "a8c3e5f2-4d8a-4f6b-9d1a-3c5e7b9f2d4a"
 authors = ["stflavian <your.email@example.com>"]
 version = "0.1.0"
 
-[deps]
-LinearAlgebra = "37e2e46d-f89d-2f13-24d2-440317375020"
-FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
-
 [compat]
 julia = "1.8"
+
+[deps]
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 
 [extras]
 Test = "8dfed614-e22d-5e5a-8d2a-8287c2c6d7dd"
