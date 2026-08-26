@@ -1,0 +1,35 @@
+# EVC_DFT Input File - Uniform Electron Gas with Angstrom units
+# Demonstrates unit conversion from Angstrom to Bohr
+
+Geometry = {
+    # Lattice vectors in Angstrom
+    LatticeVectors [Angstrom] {
+        2.645886  0.0  0.0    # ~5.0 Bohr
+        0.0  2.645886  0.0
+        0.0  0.0  2.645886
+    }
+    
+    ElectronGas {
+        NumElectrons = 8
+    }
+}
+
+Hamiltonian = DFT {
+    XCFunctional = "LDA-PZ"
+}
+
+Options = {
+    EnergyCutoff [Ha] = 15.0
+    FFTGrid = (20, 20, 20)
+    SCF {
+        MaxIter = 100
+        EnergyTolerance = 1e-10
+        DensityTolerance = 1e-10
+        Mixing = "Linear"
+        MixingParameter = 0.7
+    }
+}
+
+Driver = {
+    CalculationType = "Jellium"
+}

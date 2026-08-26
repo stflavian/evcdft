@@ -1,0 +1,20 @@
+# EVC_DFT Minimal Input File
+# This is the minimal input required for a jellium calculation
+# All optional parameters use default values
+
+Geometry = {
+    # Lattice vectors in Bohr (no unit conversion needed)
+    LatticeVectors {
+        5.0  0.0  0.0
+        0.0  5.0  0.0
+        0.0  0.0  5.0
+    }
+    
+    ElectronGas {
+        NumElectrons = 2
+    }
+}
+
+Hamiltonian = DFT {
+    XCFunctional = "LDA-PZ"
+}

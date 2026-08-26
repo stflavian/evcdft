@@ -21,6 +21,13 @@ include("Potential/xc_functionals.jl")
 # Include SCF modules
 include("SCF/self_consistent.jl")
 
+# Include IO modules
+include("IO/hsd_parser.jl")
+include("IO/input_parser.jl")
+
+# Include CLI module
+include("cli.jl")
+
 # Export commonly used types and functions
 using .Constants
 using .Units
@@ -28,6 +35,9 @@ using .Types
 using .PlaneWave
 using .XCFunctionals
 using .SelfConsistent
+using .HSDParser
+using .InputParser
+using .CLI
 
 export Lattice, SimpleCubic, FCC
 
@@ -56,6 +66,13 @@ export compute_hartree_potential, compute_hartree_energy
 export run_scf!, self_consistent_field
 
 export initialize_uniform_density
+
+# Export IO functions
+export HSDNode, parse_hsd_file, parse_hsd_string
+export InputConfig, parse_input_file, run_from_input, run_from_input_string
+
+# Export CLI function
+export main
 
 """
     Create a simple uniform electron gas system for testing.
@@ -87,7 +104,7 @@ end
     Calculate the total energy for a uniform electron gas.
     
     For a uniform electron gas (jellium), the total energy per electron is:
-    E/N = (2.8376/rs²) - (0.9163/rs) + ε_c(rs)
+    E/N = (2.8376/rs^2) - (0.9163/rs) + ε_c(rs)
     where rs is the Wigner-Seitz radius.
     
     Args:

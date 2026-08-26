@@ -1,0 +1,48 @@
+# EVC_DFT Input File - Uniform Electron Gas (Jellium)
+# This file is compatible with DFTB+ HSD format
+# Usage: julia --project -e 'using EVC_DFT; run_from_input("jellium.hsd")'
+
+# Geometry specification
+Geometry = {
+    # Lattice vectors in Angstrom (will be converted to Bohr)
+    LatticeVectors [Angstrom] {
+        5.0  0.0  0.0
+        0.0  5.0  0.0
+        0.0  0.0  5.0
+    }
+    
+    # For jellium: specify electron density instead of atoms
+    ElectronGas {
+        NumElectrons = 2
+    }
+}
+
+# Hamiltonian specification
+Hamiltonian = DFT {
+    # Exchange-correlation functional
+    # Options: "LDA-PZ" (Perdew-Zunger LDA), "LDA-PW" (Perdew-Wang LDA)
+    XCFunctional = "LDA-PZ"
+}
+
+# Calculation options
+Options = {
+    # Energy cutoff for plane wave basis (in Hartree)
+    EnergyCutoff [Ha] = 10.0
+    
+    # FFT grid size
+    FFTGrid = (16, 16, 16)
+    
+    # Self-consistent field parameters
+    SCF {
+        MaxIter = 50
+        EnergyTolerance = 1e-8
+        DensityTolerance = 1e-8
+        Mixing = "Linear"
+        MixingParameter = 0.5
+    }
+}
+
+# Driver specification
+Driver = {
+    CalculationType = "Jellium"
+}
