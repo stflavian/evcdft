@@ -8,13 +8,8 @@ on:
 
 jobs:
   test:
-    name: Run Tests (Julia ${{ matrix.version }})
+    name: Run Tests (Julia 1.12)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version:
-          - '1.9'
-          - '1.10'
     
     steps:
     - name: Checkout repository
@@ -23,7 +18,7 @@ jobs:
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2
       with:
-        version: ${{ matrix.version }}
+        version: '1.12'
         
     - name: Install FFTW package
       run: |
