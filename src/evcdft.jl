@@ -67,6 +67,7 @@ export compute_hartree_potential, compute_hartree_energy
 export run_scf!, self_consistent_field
 
 export initialize_uniform_density
+export create_uniform_electron_gas, jellium_energy_per_electron, jellium_total_energy
 
 # Export IO functions
 export HSDNode, parse_hsd_file, parse_hsd_string
