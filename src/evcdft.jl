@@ -32,6 +32,7 @@ include("cli.jl")
 using .Constants
 using .Units
 using .Types
+using .Types: Lattice, SimpleCubic, FCC, UniformElectronGas, PlaneWaveBasis, ElectronDensity, ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters, DFTSystem
 using .PlaneWave
 using .XCFunctionals
 using .SelfConsistent

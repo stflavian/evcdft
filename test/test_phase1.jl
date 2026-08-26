@@ -6,10 +6,19 @@ This file contains unit tests for:
 - Plane wave basis
 - LDA exchange-correlation functionals
 - SCF loop for uniform electron gas
+
+For comprehensive unit tests, see unit_tests.jl
+For integration tests, see integration_tests.jl
 """
 
 using Test
-using EVC_DFT
+using LinearAlgebra
+
+# Include the main module
+include("../src/evcdft.jl")
+
+# Use the module
+using .EVC_DFT
 using EVC_DFT.Constants
 using EVC_DFT.Types
 using EVC_DFT.PlaneWave
@@ -18,7 +27,7 @@ using EVC_DFT.SelfConsistent
 
 @testset "Core Constants" begin
     # Test that constants are defined
-    @test ħ == 1.0
+    @test hbar == 1.0
     @test m_e == 1.0
     @test e == 1.0
     
@@ -38,9 +47,9 @@ end
     lattice = Lattice(a1, a2, a3)
     
     @test lattice.volume ≈ 1.0
-    @test lattice.b1 ≈ [2π, 0.0, 0.0]
-    @test lattice.b2 ≈ [0.0, 2π, 0.0]
-    @test lattice.b3 ≈ [0.0, 0.0, 2π]
+    @test lattice.b1 ≈ [2 * pi, 0.0, 0.0]
+    @test lattice.b2 ≈ [0.0, 2 * pi, 0.0]
+    @test lattice.b3 ≈ [0.0, 0.0, 2 * pi]
     
     # Test SimpleCubic
     sc_lattice = SimpleCubic(2.0)
@@ -50,7 +59,7 @@ end
     ueg = UniformElectronGas(sc_lattice, 2)
     @test ueg.n_electrons == 2
     @test ueg.density ≈ 2.0 / 8.0
-    @test ueg.rs ≈ (3.0 / (4π * (2.0 / 8.0)))^(1/3)
+    @test ueg.rs ≈ (3.0 / (4 * pi * (2.0 / 8.0)))^(1/3)
     
     # Test ElectronDensity
     density = ElectronDensity((16, 16, 16))
@@ -130,7 +139,7 @@ end
 
 @testset "LDA Exchange-Correlation" begin
     # Test exchange energy
-    density = 0.1  # Bohr⁻³
+    density = 0.1  # Bohr^-3
     ex_energy = lda_exchange_energy(density)
     @test ex_energy < 0.0  # Exchange energy should be negative
     

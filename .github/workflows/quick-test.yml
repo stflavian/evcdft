@@ -1,0 +1,92 @@
+name: Quick Validation
+
+on:
+  push:
+    branches: [ main, dev, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quick-test:
+    name: Quick Validation Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Julia
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: '1.9'
+        
+    - name: Install FFTW package
+      run: |
+        julia --project=@. -e '
+          using Pkg
+          Pkg.add("FFTW")
+        '
+        
+    - name: Validate basic functionality
+      run: |
+        julia --project=@. -e '
+          include("src/evcdft.jl")
+          using .EVC_DFT
+          using .EVC_DFT.Constants
+          using .EVC_DFT.Types
+          using .EVC_DFT.XCFunctionals
+          
+          println("Validating EVC_DFT package...")
+          
+          # Test 1: Constants module
+          println("Testing Constants module...")
+          @assert Constants.hbar == 1.0
+          @assert Constants.m_e == 1.0
+          @assert Constants.e == 1.0
+          @assert Constants.pi ≈ 3.141592653589793
+          println("✓ Constants module works")
+          
+          # Test 2: Types module
+          println("Testing Types module...")
+          lattice = Types.SimpleCubic(5.0)
+          @assert lattice.volume ≈ 125.0
+          
+          basis = Types.PlaneWaveBasis(lattice, 10.0, (8, 8, 8))
+          @assert length(basis.g_vectors) > 0
+          
+          system = Types.DFTSystem(lattice, basis, 2)
+          @assert system.electrons == 2
+          println("✓ Types module works")
+          
+          # Test 3: XC Functionals module
+          println("Testing XC Functionals module...")
+          density = 0.1
+          @assert XCFunctionals.lda_exchange_energy(density) < 0.0
+          @assert XCFunctionals.lda_correlation_energy(density) < 0.0
+          @assert XCFunctionals.lda_xc_energy(density) < 0.0
+          println("✓ XC Functionals module works")
+          
+          # Test 4: Main module functions
+          println("Testing main module functions...")
+          system = EVC_DFT.create_uniform_electron_gas(5.0, 2, 10.0, (8, 8, 8))
+          @assert system.lattice.volume ≈ 125.0
+          @assert system.electrons == 2
+          
+          EVC_DFT.initialize_uniform_density(system)
+          expected_density = 2.0 / 125.0
+          @assert all(≈(expected_density), system.density.data, atol=1e-10)
+          println("✓ Main module functions work")
+          
+          # Test 5: Jellium energy
+          println("Testing jellium energy...")
+          rs = 2.0
+          energy = EVC_DFT.jellium_energy_per_electron(rs)
+          @assert isfinite(energy)
+          @assert energy > 0.0
+          println("✓ Jellium energy calculation works")
+          
+          println("\n✓✓✓ All quick validation tests passed! ✓✓✓")
+          println("EVC_DFT package is working correctly.")
+        '
+      env:
+        JULIA_NUM_THREADS: 2

@@ -1,0 +1,80 @@
+name: EVC_DFT CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1.9'
+          - '1.10'
+        os:
+          - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Julia
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: ${{ matrix.version }}
+        
+    - name: Cache Julia packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.julia
+        key: ${{ runner.os }}-julia-${{ matrix.version }}-${{ hashFiles('Project.toml', 'Manifest.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-julia-${{ matrix.version }}-
+          ${{ runner.os }}-julia-
+    
+    - name: Install dependencies
+      run: |
+        julia --project=@. -e '
+          using Pkg
+          Pkg.resolve()
+          Pkg.instantiate()
+          Pkg.precompile()
+        '
+        
+    - name: Run test suite
+      run: |
+        julia --project=@. -e '
+          # Add src to LOAD_PATH
+          push!(LOAD_PATH, "@.")
+          push!(LOAD_PATH, joinpath(pwd(), "src"))
+          
+          # Include the main module
+          include("src/evcdft.jl")
+          
+          # Import modules
+          using .EVC_DFT
+          using .EVC_DFT.Constants
+          using .EVC_DFT.Types
+          using .EVC_DFT.PlaneWave
+          using .EVC_DFT.XCFunctionals
+          using .EVC_DFT.SelfConsistent
+          using Test
+          
+          println("Running comprehensive test suite...")
+          
+          # Run all test files
+          include("test/unit_tests.jl")
+          include("test/integration_tests.jl")
+          include("test/test_phase1.jl")
+          
+          println("\n=== All CI tests completed successfully! ===")
+        '
+      env:
+        JULIA_NUM_THREADS: auto
