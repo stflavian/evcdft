@@ -2,54 +2,18 @@ name: EVC_DFT CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ never ]
   pull_request:
-    branches: [ main ]
+    branches: [ never ]
 
 jobs:
   test:
-    name: Julia 1.12 on Ubuntu
+    name: Julia 1.12 on Ubuntu - DISABLED
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup Julia
-      uses: julia-actions/setup-julia@v2
-      with:
-        version: '1.12'
-        
-    - name: Install FFTW and run test suite
-      run: |
-        julia --project=@. -e '
-          using Pkg
-          Pkg.add("FFTW")
-          
-          # Add src to LOAD_PATH
-          push!(LOAD_PATH, "@.")
-          push!(LOAD_PATH, joinpath(pwd(), "src"))
-          
-          # Include the main module
-          include("src/EVC_DFT.jl")
-          
-          # Import modules
-          using .EVC_DFT
-          using .EVC_DFT.Constants
-          using .EVC_DFT.Types
-          using .EVC_DFT.PlaneWave
-          using .EVC_DFT.XCFunctionals
-          using .EVC_DFT.SelfConsistent
-          using Test
-          
-          println("Running comprehensive test suite...")
-          
-          # Run all test files
-          include("test/unit_tests.jl")
-          include("test/integration_tests.jl")
-          include("test/test_phase1.jl")
-          
-          println("\n=== All CI tests completed successfully! ===")
-        '
-      env:
-        JULIA_NUM_THREADS: auto
+    - name: This workflow is disabled
+      run: echo "This workflow is disabled. Use quick-test.yml instead."

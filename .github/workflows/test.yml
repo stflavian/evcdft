@@ -2,67 +2,18 @@ name: EVC_DFT Test Suite
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ never ]
   pull_request:
-    branches: [ main ]
+    branches: [ never ]
 
 jobs:
   test:
-    name: Run Tests (Julia 1.12)
+    name: Run Tests (Julia 1.12) - DISABLED
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup Julia
-      uses: julia-actions/setup-julia@v2
-      with:
-        version: '1.12'
-        
-    - name: Install FFTW and run tests
-      run: |
-        julia --project=@. -e '
-          using Pkg
-          Pkg.add("FFTW")
-          
-          # Add src to LOAD_PATH
-          push!(LOAD_PATH, "@.")
-          push!(LOAD_PATH, joinpath(pwd(), "src"))
-          
-          using Test
-          
-          # Include and run tests
-          include("test/unit_tests.jl")
-          include("test/integration_tests.jl")
-          include("test/test_phase1.jl")
-          
-          println("\n=== All tests completed successfully! ===")
-        '
-      env:
-        JULIA_NUM_THREADS: auto
-        
-    - name: Run simple validation
-      run: |
-        julia --project=@. -e '
-          using Pkg
-          Pkg.add("FFTW")
-          
-          include("src/EVC_DFT.jl")
-          using .EVC_DFT
-          using .EVC_DFT.Constants
-          using .EVC_DFT.Types
-          using .EVC_DFT.XCFunctionals
-          
-          # Basic tests
-          lattice = SimpleCubic(5.0)
-          @assert lattice.volume ≈ 125.0
-          
-          density = 0.1
-          @assert lda_exchange_energy(density) < 0.0
-          @assert lda_correlation_energy(density) < 0.0
-          
-          println("All basic tests passed!")
-        '
-      env:
-        JULIA_NUM_THREADS: auto
+    - name: This workflow is disabled
+      run: echo "This workflow is disabled. Use quick-test.yml instead."

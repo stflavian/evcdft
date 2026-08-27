@@ -26,6 +26,10 @@ jobs:
           using Pkg
           Pkg.add("FFTW")
           
+          # Add src to LOAD_PATH
+          push!(LOAD_PATH, "@.")
+          push!(LOAD_PATH, joinpath(pwd(), "src"))
+          
           include("src/EVC_DFT.jl")
           using .EVC_DFT
           using .EVC_DFT.Constants

@@ -8,8 +8,8 @@ Usage:
 
 module CLI
 
-using .InputParser: run_from_input, parse_input_file
-using .EVC_DFT: DFTSystem
+using ..InputParser: run_from_input, parse_input_file
+using ..EVC_DFT: DFTSystem
 
 # Export the main function
 export main
