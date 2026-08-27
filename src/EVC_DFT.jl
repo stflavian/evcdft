@@ -24,6 +24,11 @@ include("SCF/self_consistent.jl")
 # Include IO modules
 include("IO/hsd_parser.jl")
 
+# Import types needed for helper functions
+using .Types: Lattice, SimpleCubic, PlaneWaveBasis, DFTSystem, ElectronDensity, 
+               ElectronDensityReciprocal, KohnShamPotential, EnergyComponents
+using .PlaneWave: PlaneWaveBasis
+
 # Define helper functions that are used by submodules
 # These need to be defined before including input_parser.jl and cli.jl
 
