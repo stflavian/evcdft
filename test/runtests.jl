@@ -9,7 +9,7 @@ Usage: julia runtests.jl
 push!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 # Include the main module
-include(joinpath(@__DIR__, "..", "src", "evcdft.jl"))
+include(joinpath(@__DIR__, "..", "src", "EVC_DFT.jl"))
 
 # Use the module
 using .EVC_DFT

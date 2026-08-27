@@ -29,16 +29,16 @@ include("IO/input_parser.jl")
 include("cli.jl")
 
 # Export commonly used types and functions
-using . Constants
-using . Units
-using . Types
-using . Types: Lattice, SimpleCubic, FCC, UniformElectronGas, PlaneWaveBasis, ElectronDensity, ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters, DFTSystem
-using . PlaneWave
-using . XCFunctionals
-using . SelfConsistent
-using . HSDParser
-using . InputParser
-using . CLI
+using .Constants
+using .Units
+using .Types
+using .Types: Lattice, SimpleCubic, FCC, UniformElectronGas, PlaneWaveBasis, ElectronDensity, ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters, DFTSystem
+using .PlaneWave
+using .XCFunctionals
+using .SelfConsistent
+using .HSDParser
+using .InputParser
+using .CLI
 
 export Lattice, SimpleCubic, FCC
 
