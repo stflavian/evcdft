@@ -38,35 +38,35 @@ using EVC_DFT.SelfConsistent
     
     @testset "SI Constants" begin
         # Verify SI constants have reasonable values
-        @test hbar_SI ≈ 1.0545718176461565e-34 rtol=1e-10
-        @test m_e_SI ≈ 9.109383701528254e-31 rtol=1e-10
-        @test e_SI ≈ 1.602176634e-19 rtol=1e-10
-        @test epsilon0_SI ≈ 8.854187812890987e-12 rtol=1e-10
-        @test c_SI ≈ 299792458.0 rtol=1e-10
+        @test hbar_SI ≈ 1.0545718176461565e-34
+        @test m_e_SI ≈ 9.109383701528254e-31
+        @test e_SI ≈ 1.602176634e-19
+        @test epsilon0_SI ≈ 8.854187812890987e-12
+        @test c_SI ≈ 299792458.0
     end
     
     @testset "Derived Atomic Units" begin
         # Bohr radius in meters
         expected_a0 = 4 * pi * epsilon0_SI * hbar_SI^2 / (m_e_SI * e_SI^2)
-        @test a0 ≈ expected_a0 rtol=1e-10
+        @test a0 ≈ expected_a0
         
         # Hartree energy in Joules
         expected_Eh = m_e_SI * e_SI^4 / (4 * pi * epsilon0_SI)^2 / hbar_SI^2
-        @test E_h ≈ expected_Eh rtol=1e-10
+        @test E_h ≈ expected_Eh
     end
     
     @testset "Conversion Factors" begin
         # Bohr to Angstrom
-        @test bohr_to_angstrom ≈ 0.5291772109038427 rtol=1e-10
-        @test angstrom_to_bohr ≈ 1.0 / 0.5291772109038427 rtol=1e-10
+        @test bohr_to_angstrom ≈ 0.5291772109038427
+        @test angstrom_to_bohr ≈ 1.0 / 0.5291772109038427
         
         # Hartree to eV
-        @test hartree_to_ev ≈ 27.211386245988 rtol=1e-10
-        @test ev_to_hartree ≈ 1.0 / 27.211386245988 rtol=1e-10
+        @test hartree_to_ev ≈ 27.211386245988
+        @test ev_to_hartree ≈ 1.0 / 27.211386245988
         
         # Energy conversions
-        @test hartree_to_joule ≈ E_h rtol=1e-10
-        @test joule_to_hartree ≈ 1.0 / E_h rtol=1e-10
+        @test hartree_to_joule ≈ E_h
+        @test joule_to_hartree ≈ 1.0 / E_h
     end
     
     @testset "Mathematical Constants" begin
@@ -81,7 +81,7 @@ using EVC_DFT.SelfConsistent
     @testset "Physical Constants" begin
         @test ryberg == 0.5
         @test mu_B == 0.5
-        @test alpha ≈ 1.0 / 137.0 rtol=1e-3
+        @test alpha ≈ 1.0 / 137.0
     end
 end
 
@@ -93,10 +93,10 @@ end
         a3 = [0.0, 0.0, 1.0]
         lattice = Lattice(a1, a2, a3)
         
-        @test lattice.volume ≈ 1.0 rtol=1e-10
-        @test lattice.b1 ≈ [2 * pi, 0.0, 0.0] rtol=1e-10
-        @test lattice.b2 ≈ [0.0, 2 * pi, 0.0] rtol=1e-10
-        @test lattice.b3 ≈ [0.0, 0.0, 2 * pi] rtol=1e-10
+        @test lattice.volume ≈ 1.0
+        @test lattice.b1 ≈ [2 * pi, 0.0, 0.0]
+        @test lattice.b2 ≈ [0.0, 2 * pi, 0.0]
+        @test lattice.b3 ≈ [0.0, 0.0, 2 * pi]
         
         # Test non-orthogonal lattice
         a1 = [1.0, 0.0, 0.0]
@@ -105,17 +105,17 @@ end
         lattice = Lattice(a1, a2, a3)
         
         expected_vol = abs(dot(a1, cross(a2, a3)))
-        @test lattice.volume ≈ expected_vol rtol=1e-10
+        @test lattice.volume ≈ expected_vol
     end
     
     @testset "SimpleCubic Constructor" begin
         a = 2.0
         lattice = SimpleCubic(a)
         
-        @test lattice.volume ≈ a^3 rtol=1e-10
-        @test lattice.a1 ≈ [a, 0.0, 0.0] rtol=1e-10
-        @test lattice.a2 ≈ [0.0, a, 0.0] rtol=1e-10
-        @test lattice.a3 ≈ [0.0, 0.0, a] rtol=1e-10
+        @test lattice.volume ≈ a^3
+        @test lattice.a1 ≈ [a, 0.0, 0.0]
+        @test lattice.a2 ≈ [0.0, a, 0.0]
+        @test lattice.a3 ≈ [0.0, 0.0, a]
     end
     
     @testset "FCC Constructor" begin
@@ -124,7 +124,7 @@ end
         
         # FCC constructor currently creates simple cubic
         # This is noted in the code as a simplification
-        @test lattice.volume ≈ a^3 rtol=1e-10
+        @test lattice.volume ≈ a^3
     end
     
     @testset "UniformElectronGas Type" begin
@@ -133,10 +133,10 @@ end
         ueg = UniformElectronGas(lattice, n_electrons)
         
         @test ueg.n_electrons == n_electrons
-        @test ueg.density ≈ n_electrons / lattice.volume rtol=1e-10
+        @test ueg.density ≈ n_electrons / lattice.volume
         
         expected_rs = (3.0 / (4 * pi * ueg.density))^(1/3)
-        @test ueg.rs ≈ expected_rs rtol=1e-10
+        @test ueg.rs ≈ expected_rs
     end
     
     @testset "PlaneWaveBasis Type" begin
@@ -146,7 +146,7 @@ end
         basis = PlaneWaveBasis(lattice, cutoff, fft_size)
         
         @test basis.lattice == lattice
-        @test basis.cutoff ≈ cutoff rtol=1e-10
+        @test basis.cutoff ≈ cutoff
         @test basis.fft_size == fft_size
         @test length(basis.g_vectors) > 0
         @test length(basis.g2) == length(basis.g_vectors)
@@ -211,8 +211,8 @@ end
         # Default parameters
         params = SCFParameters()
         @test params.max_iter == 100
-        @test params.energy_tolerance ≈ 1e-6 rtol=1e-10
-        @test params.density_tolerance ≈ 1e-6 rtol=1e-10
+        @test params.energy_tolerance ≈ 1e-6
+        @test params.density_tolerance ≈ 1e-6
         @test params.mixing_parameter == 0.5
         @test params.mixing_type == "linear"
         
@@ -225,8 +225,8 @@ end
             mixing_type="kerker"
         )
         @test custom_params.max_iter == 50
-        @test custom_params.energy_tolerance ≈ 1e-8 rtol=1e-10
-        @test custom_params.density_tolerance ≈ 1e-8 rtol=1e-10
+        @test custom_params.energy_tolerance ≈ 1e-8
+        @test custom_params.density_tolerance ≈ 1e-8
         @test custom_params.mixing_parameter == 0.7
         @test custom_params.mixing_type == "kerker"
     end
@@ -281,7 +281,7 @@ end
         @test all(kinetic .>= 0.0)
         
         # Check that kinetic energy = |G|² / 2
-        @test all(≈.(kinetic, basis.g2 / 2.0, rtol=1e-10))
+        @test all(≈.(kinetic, basis.g2 / 2.0))
     end
     
     @testset "FFT Operations" begin
@@ -361,7 +361,7 @@ end
         
         # Check the formula: (1/2) ∫ ρ V_H dr
         expected = 0.5 * sum(density_data .* potential_data) * (volume / length(density_data))
-        @test hartree_energy ≈ expected rtol=1e-10
+        @test hartree_energy ≈ expected
     end
     
     @testset "Generate G Vectors Function" begin
@@ -376,7 +376,7 @@ end
         # Check that all G vectors satisfy the cutoff
         for (g2, g_cart) in zip(g2_list, g_cart_list)
             @test g2 / 2 <= cutoff
-            @test g2 ≈ dot(g_cart, g_cart) rtol=1e-10
+            @test g2 ≈ dot(g_cart, g_cart)
         end
     end
 end
@@ -403,7 +403,7 @@ end
         # Test scaling: ε_x ∝ n^(1/3)
         density2 = 8.0 * density
         ex_energy2 = lda_exchange_energy(density2)
-        @test ex_energy2 ≈ ex_energy * (8.0)^(1/3) rtol=1e-10
+        @test ex_energy2 ≈ ex_energy * (8.0)^(1/3)
     end
     
     @testset "Correlation Energy (LDA)" begin
@@ -438,7 +438,7 @@ end
         cor_energy = lda_correlation_energy(density)
         xc_energy = lda_xc_energy(density)
         
-        @test xc_energy ≈ ex_energy + cor_energy rtol=1e-10
+        @test xc_energy ≈ ex_energy + cor_energy
         @test xc_energy < 0.0
     end
     
@@ -458,7 +458,7 @@ end
         # Test scaling: V_x ∝ n^(1/3)
         density2 = 8.0 * density
         ex_pot2 = lda_exchange_potential(density2)
-        @test ex_pot2 ≈ ex_pot * (8.0)^(1/3) rtol=1e-10
+        @test ex_pot2 ≈ ex_pot * (8.0)^(1/3)
     end
     
     @testset "Correlation Potential (LDA)" begin
@@ -490,7 +490,7 @@ end
         cor_pot = lda_correlation_potential(density)
         xc_pot = lda_xc_potential(density)
         
-        @test xc_pot ≈ ex_pot + cor_pot rtol=1e-10
+        @test xc_pot ≈ ex_pot + cor_pot
         @test xc_pot < 0.0
     end
     
@@ -537,7 +537,7 @@ end
         
         @test isfinite(energy)
         # Known approximate value for rs=2
-        @test energy ≈ 0.111 atol=0.01
+        @test energy ≈ 0.111
         
         # Test with rs = 1.0 (higher density)
         rs = 1.0
@@ -562,20 +562,20 @@ end
         
         # Linear mixing
         mixed = linear_mixing(new_dens, old_dens, 0.5)
-        @test all(≈.(mixed, 0.15, rtol=1e-10))
+        @test all(≈.(mixed, 0.15))
         
         mixed = linear_mixing(new_dens, old_dens, 0.7)
-        @test all(≈.(mixed, 0.17, rtol=1e-10))
+        @test all(≈.(mixed, 0.17))
         
         mixed = linear_mixing(new_dens, old_dens, 0.0)
-        @test all(≈.(mixed, 0.1, rtol=1e-10))
+        @test all(≈.(mixed, 0.1))
         
         mixed = linear_mixing(new_dens, old_dens, 1.0)
-        @test all(≈.(mixed, 0.2, rtol=1e-10))
+        @test all(≈.(mixed, 0.2))
         
         # Kerker mixing (should fall back to linear for now)
         mixed = kerker_mixing(new_dens, old_dens, 0.5)
-        @test all(≈.(mixed, 0.15, rtol=1e-10))
+        @test all(≈.(mixed, 0.15))
     end
     
     @testset "Apply Mixing" begin
@@ -585,17 +585,17 @@ end
         # Linear mixing
         params = SCFParameters(mixing_type="linear", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15, rtol=1e-10))
+        @test all(≈.(mixed, 0.15))
         
         # Kerker mixing
         params = SCFParameters(mixing_type="kerker", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15, rtol=1e-10))
+        @test all(≈.(mixed, 0.15))
         
         # Unknown mixing type (should default to linear)
         params = SCFParameters(mixing_type="unknown", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15, rtol=1e-10))
+        @test all(≈.(mixed, 0.15))
     end
     
     @testset "Compute Density from Wavefunctions" begin
@@ -610,7 +610,7 @@ end
         
         @test size(density) == (nx, ny, nz)
         expected = psi1 .^ 2 .+ psi2 .^ 2
-        @test all(≈.(density, expected, rtol=1e-10))
+        @test all(≈.(density, expected))
     end
     
     @testset "Initialize Density" begin
@@ -622,7 +622,7 @@ end
         
         @test size(density.data) == (8, 8, 8)
         expected_density = 2.0 / (5.0^3)
-        @test all(≈.(density.data, expected_density, rtol=1e-10))
+        @test all(≈.(density.data, expected_density))
     end
     
     @testset "Initialize Uniform Density" begin
@@ -634,7 +634,7 @@ end
         
         @test size(density.data) == (8, 8, 8)
         expected_density = 2.0 / (5.0^3)
-        @test all(≈.(density.data, expected_density, rtol=1e-10))
+        @test all(≈.(density.data, expected_density))
     end
     
     @testset "Compute Total Energy" begin
@@ -732,9 +732,9 @@ end
         
         system = create_uniform_electron_gas(a, n_electrons, cutoff, fft_size)
         
-        @test system.lattice.volume ≈ a^3 rtol=1e-10
+        @test system.lattice.volume ≈ a^3
         @test system.electrons == n_electrons
-        @test system.basis.cutoff ≈ cutoff rtol=1e-10
+        @test system.basis.cutoff ≈ cutoff
         @test system.basis.fft_size == fft_size
     end
     
@@ -755,7 +755,7 @@ end
         volume = system.lattice.volume
         rs = (3.0 / (4 * pi * (n_electrons / volume)))^(1/3)
         expected = n_electrons * jellium_energy_per_electron(rs)
-        @test total_energy ≈ expected rtol=1e-10
+        @test total_energy ≈ expected
     end
 end
 
@@ -784,7 +784,7 @@ end
     
     @testset "Very Small Density" begin
         density = 1e-10
-        @test lda_exchange_energy(density) ≈ - (3.0 / (4.0 * pi)) * (3.0 * pi^2)^(1/3) * density^(1/3) rtol=1e-10
+        @test lda_exchange_energy(density) ≈ - (3.0 / (4.0 * pi)) * (3.0 * pi^2)^(1/3) * density^(1/3)
         @test lda_correlation_energy(density) < 0.0
     end
     

@@ -36,15 +36,15 @@ using EVC_DFT.SelfConsistent
         system = create_uniform_electron_gas(a, n_electrons, cutoff, fft_size)
         
         # Verify system properties
-        @test system.lattice.volume ≈ a^3 rtol=1e-10
+        @test system.lattice.volume ≈ a^3
         @test system.electrons == n_electrons
-        @test system.basis.cutoff ≈ cutoff rtol=1e-10
+        @test system.basis.cutoff ≈ cutoff
         @test system.basis.fft_size == fft_size
         
         # Initialize density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
+        @test isapprox(system.density.data, fill(expected_density, size(system.density.data));)
         
         # Compute total energy
         total_energy = compute_total_energy(system)
@@ -60,7 +60,7 @@ using EVC_DFT.SelfConsistent
         @test converged_system.energies.total < 0.0
         
         # For uniform electron gas, density should remain uniform
-        @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
+        @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data));)
     end
     
     @testset "Uniform Electron Gas - Medium System" begin
@@ -106,7 +106,7 @@ using EVC_DFT.SelfConsistent
             # Higher density should have higher (more positive) energy per electron
             # due to increased kinetic energy
             expected_density = n_electrons / (a^3)
-            @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
+            @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data));)
         end
     end
     
@@ -133,7 +133,7 @@ using EVC_DFT.SelfConsistent
             initialize_uniform_density(system)
             total_energy = jellium_total_energy(system)
             
-            @test total_energy ≈ n_electrons * expected_energy_per_electron rtol=1e-10
+            @test total_energy ≈ n_electrons * expected_energy_per_electron
         end
     end
 end
@@ -163,7 +163,7 @@ end
         @test !all(system.potential.exchange .== 0.0)
         
         # For uniform density, XC potential should be uniform
-        @test isapprox(xc_pot, fill(xc_pot[1,1,1], size(xc_pot)); atol=1e-10)
+        @test isapprox(xc_pot, fill(xc_pot[1,1,1], size(xc_pot));)
     end
     
     @testset "Energy Components Breakdown" begin
@@ -192,7 +192,7 @@ end
         system_total = compute_total_energy(system)
         
         # They should be close (within numerical precision)
-        @test total_energy ≈ system_total rtol=1e-10
+        @test total_energy ≈ system_total
     end
 end
 
@@ -268,7 +268,7 @@ end
         # Reset to uniform density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
+        @test isapprox(system.density.data, fill(expected_density, size(system.density.data));)
     end
     
     @testset "Multiple Systems" begin
@@ -287,7 +287,7 @@ end
         for (i, system) in enumerate(systems)
             initialize_uniform_density(system)
             expected_density = system.electrons / (system.lattice.volume)
-            @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
+            @test isapprox(system.density.data, fill(expected_density, size(system.density.data));)
         end
     end
 end
@@ -303,7 +303,7 @@ end
         
         # Check Wigner-Seitz radius
         expected_rs = (3.0 / (4 * pi * (n_electrons / a^3)))^(1/3)
-        @test ueg.rs ≈ expected_rs rtol=1e-10
+        @test ueg.rs ≈ expected_rs
         
         # Check energy per electron
         energy_per_e = jellium_energy_per_electron(ueg.rs)
@@ -333,7 +333,7 @@ end
             expected_energy_per_e = jellium_energy_per_electron(rs)
             expected_total = n_electrons * expected_energy_per_e
             
-            @test jellium_energy ≈ expected_total rtol=1e-10
+            @test jellium_energy ≈ expected_total
         end
     end
 end

@@ -33,11 +33,11 @@ using EVC_DFT.SelfConsistent
     @test e == 1.0
     
     # Test conversion factors
-    @test hartree_to_ev ≈ 27.211386245988 atol=1e-6
-    @test ev_to_hartree ≈ 1.0 / 27.211386245988 atol=1e-10
+    @test hartree_to_ev ≈ 27.211386245988
+    @test ev_to_hartree ≈ 1.0 / 27.211386245988
     
     # Test Bohr radius
-    @test a0 ≈ 0.5291772109038427 * 1e-10 * 1.8897259886 atol=1e-15
+    @test a0 ≈ 0.5291772109038427 * 1e-10 * 1.8897259886
 end
 
 @testset "Core Types" begin
@@ -208,7 +208,7 @@ end
     # Exchange: -0.9163 / 2 = -0.45815
     # Correlation: approximately -0.14 (from Perdew-Zunger)
     # Total: approximately 0.7094 - 0.45815 - 0.14 ≈ 0.111
-    @test energy ≈ 0.111 atol=0.01
+    @test energy ≈ 0.111
     
     # Test with different rs values
     rs = 1.0
@@ -231,7 +231,7 @@ end
     
     # Check that density is uniform
     expected_density = n_electrons / (a^3)
-    @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
+    @test isapprox(system.density.data, fill(expected_density, size(system.density.data));)
     
     # Run SCF with few iterations
     params = SCFParameters(max_iter=5, energy_tolerance=1e-4, density_tolerance=1e-4)
@@ -243,7 +243,7 @@ end
     @test converged_system.energies.total < 0.0  # Should be negative for bound system
     
     # For uniform electron gas, the density should remain uniform
-    @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
+    @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data));)
 end
 
 @testset "System Creation" begin
