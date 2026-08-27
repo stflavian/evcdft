@@ -20,13 +20,15 @@ jobs:
       with:
         version: '1.12'
         
-    - name: Install dependencies and run tests
+    - name: Install FFTW and run tests
       run: |
         julia --project=@. -e '
           using Pkg
-          Pkg.develop(path=".")
           Pkg.add("FFTW")
-          Pkg.add("Test")
+          
+          # Add src to LOAD_PATH
+          push!(LOAD_PATH, "@.")
+          push!(LOAD_PATH, joinpath(pwd(), "src"))
           
           using Test
           
@@ -44,10 +46,9 @@ jobs:
       run: |
         julia --project=@. -e '
           using Pkg
-          Pkg.develop(path=".")
           Pkg.add("FFTW")
           
-          include("src/evcdft.jl")
+          include("src/EVC_DFT.jl")
           using .EVC_DFT
           using .EVC_DFT.Constants
           using .EVC_DFT.Types

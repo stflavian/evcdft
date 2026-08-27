@@ -20,16 +20,18 @@ jobs:
       with:
         version: '1.12'
         
-    - name: Install dependencies and run test suite
+    - name: Install FFTW and run test suite
       run: |
         julia --project=@. -e '
           using Pkg
-          Pkg.develop(path=".")
           Pkg.add("FFTW")
-          Pkg.add("Test")
+          
+          # Add src to LOAD_PATH
+          push!(LOAD_PATH, "@.")
+          push!(LOAD_PATH, joinpath(pwd(), "src"))
           
           # Include the main module
-          include("src/evcdft.jl")
+          include("src/EVC_DFT.jl")
           
           # Import modules
           using .EVC_DFT
