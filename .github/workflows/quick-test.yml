@@ -25,6 +25,7 @@ jobs:
         julia --project=@. -e '
           using Pkg
           Pkg.add("FFTW")
+          Pkg.instantiate()
           
           # Add src to LOAD_PATH
           push!(LOAD_PATH, "@.")
