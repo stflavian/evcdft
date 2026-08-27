@@ -23,58 +23,9 @@ include("SCF/self_consistent.jl")
 
 # Include IO modules
 include("IO/hsd_parser.jl")
-include("IO/input_parser.jl")
 
-# Include CLI module
-include("cli.jl")
-
-# Export commonly used types and functions
-using .Constants
-using .Units
-using .Types
-using .Types: Lattice, SimpleCubic, FCC, UniformElectronGas, PlaneWaveBasis, ElectronDensity, ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters, DFTSystem
-using .PlaneWave
-using .XCFunctionals
-using .SelfConsistent
-using .HSDParser
-using .InputParser
-using .CLI
-
-export Lattice, SimpleCubic, FCC
-
-export UniformElectronGas
-
-export PlaneWaveBasis
-
-export ElectronDensity, ElectronDensityReciprocal
-
-export KohnShamPotential
-
-export EnergyComponents
-
-export SCFParameters
-
-export DFTSystem
-
-export lda_exchange_energy, lda_correlation_energy, lda_xc_energy
-
-export lda_exchange_potential, lda_correlation_potential, lda_xc_potential
-
-export compute_lda_xc
-
-export compute_hartree_potential, compute_hartree_energy
-
-export run_scf!, self_consistent_field
-
-export initialize_uniform_density
-export create_uniform_electron_gas, jellium_energy_per_electron, jellium_total_energy
-
-# Export IO functions
-export HSDNode, parse_hsd_file, parse_hsd_string
-export InputConfig, parse_input_file, run_from_input, run_from_input_string
-
-# Export CLI function
-export main
+# Define helper functions that are used by submodules
+# These need to be defined before including input_parser.jl and cli.jl
 
 """
     Create a simple uniform electron gas system for testing.
@@ -148,5 +99,57 @@ function jellium_total_energy(system::DFTSystem)
         error("System is not a uniform electron gas")
     end
 end
+
+# Now include modules that depend on the above functions
+include("IO/input_parser.jl")
+include("cli.jl")
+
+# Export commonly used types and functions
+using .Constants
+using .Units
+using .Types
+using .Types: Lattice, SimpleCubic, FCC, UniformElectronGas, PlaneWaveBasis, ElectronDensity, ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters, DFTSystem
+using .PlaneWave
+using .XCFunctionals
+using .SelfConsistent
+using .HSDParser
+using .InputParser
+using .CLI
+
+export Lattice, SimpleCubic, FCC
+
+export UniformElectronGas
+
+export PlaneWaveBasis
+
+export ElectronDensity, ElectronDensityReciprocal
+
+export KohnShamPotential
+
+export EnergyComponents
+
+export SCFParameters
+
+export DFTSystem
+
+export lda_exchange_energy, lda_correlation_energy, lda_xc_energy
+
+export lda_exchange_potential, lda_correlation_potential, lda_xc_potential
+
+export compute_lda_xc
+
+export compute_hartree_potential, compute_hartree_energy
+
+export run_scf!, self_consistent_field
+
+export initialize_uniform_density
+export create_uniform_electron_gas, jellium_energy_per_electron, jellium_total_energy
+
+# Export IO functions
+export HSDNode, parse_hsd_file, parse_hsd_string
+export InputConfig, parse_input_file, run_from_input, run_from_input_string
+
+# Export CLI function
+export main
 
 end # module EVC_DFT
