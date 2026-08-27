@@ -14,7 +14,7 @@ using ..PlaneWave: compute_hartree_potential, compute_hartree_energy, fft_forwar
 using ..XCFunctionals: compute_lda_xc
 
 # Export the main function
-export run_scf!, self_consistent_field
+export run_scf!, self_consistent_field, initialize_uniform_density
 
 """
     Mix two densities using linear mixing.
