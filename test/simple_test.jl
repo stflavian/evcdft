@@ -4,7 +4,8 @@ This can be run directly to verify the package works.
 """
 
 # Include the main module
-include("../src/evcdft.jl")
+push!(LOAD_PATH, joinpath(@__DIR__, ".."))
+include(joinpath(@__DIR__, "..", "src", "evcdft.jl"))
 
 using .EVC_DFT
 using .EVC_DFT.Constants

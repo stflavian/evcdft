@@ -20,16 +20,13 @@ jobs:
       with:
         version: '1.12'
         
-    - name: Install FFTW package
+    - name: Install dependencies and validate
       run: |
         julia --project=@. -e '
           using Pkg
+          Pkg.develop(path=".")
           Pkg.add("FFTW")
-        '
-        
-    - name: Validate basic functionality
-      run: |
-        julia --project=@. -e '
+          
           include("src/evcdft.jl")
           using .EVC_DFT
           using .EVC_DFT.Constants

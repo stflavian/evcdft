@@ -5,8 +5,11 @@ This script runs all tests for the EVC_DFT package.
 Usage: julia runtests.jl
 """
 
+# Add the parent directory to LOAD_PATH for proper module loading
+push!(LOAD_PATH, joinpath(@__DIR__, ".."))
+
 # Include the main module
-include("../src/evcdft.jl")
+include(joinpath(@__DIR__, "..", "src", "evcdft.jl"))
 
 # Use the module
 using .EVC_DFT
@@ -24,9 +27,9 @@ println("Running EVC_DFT test suite...")
 println("="^60)
 
 # Include all test files
-include("unit_tests.jl")
-include("integration_tests.jl")
-include("test_phase1.jl")
+include(joinpath(@__DIR__, "unit_tests.jl"))
+include(joinpath(@__DIR__, "integration_tests.jl"))
+include(joinpath(@__DIR__, "test_phase1.jl"))
 
 println("="^60)
 println("\nAll tests completed successfully!")

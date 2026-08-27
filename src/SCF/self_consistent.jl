@@ -201,16 +201,21 @@ end
 """
     Run a single SCF iteration.
     
+    For a uniform electron gas (jellium model), the density remains uniform.
+    In this simplified implementation, we compute the potentials and energy
+    but keep the density uniform, which is the correct solution for jellium.
+    
     Args:
     - system: DFTSystem
     - params: SCFParameters
     
     Returns:
     - new_energy: Total energy after this iteration
-    - new_density: New electron density
+    - new_density: New electron density (for jellium, same as input)
 """
 function scf_iteration!(system::DFTSystem, params::SCFParameters)
     volume = system.lattice.volume
+    n_electrons = system.electrons
     
     # Compute Hartree potential
     hartree_potential = compute_hartree_potential(system.density, system.basis)
@@ -219,26 +224,34 @@ function scf_iteration!(system::DFTSystem, params::SCFParameters)
     # Compute XC potential (LDA)
     xc_energy, xc_potential = compute_lda_xc(system.density, volume)
     system.potential.exchange .= xc_potential
-    system.potential.correlation .= xc_potential  # For now, same as exchange
+    system.potential.correlation .= 0.0
     
-    # For uniform electron gas, the total potential is V_H + V_xc
-    # In jellium, we also need to subtract the positive background potential
-    # For now, we'll just use V_H + V_xc
+    # For jellium model: add positive background potential to cancel Hartree
+    # The positive background creates a potential V_b = -V_H
+    # So total electrostatic potential = V_H + V_b = 0
+    # This means the Kohn-Sham potential is just V_xc
     
-    # Compute total energy
+    # Compute energy components
     system.energies.hartree = compute_hartree_energy(system.density.data, hartree_potential, volume)
-    system.energies.exchange = xc_energy  # Simplified
-    system.energies.correlation = 0.0    # Simplified
-    system.energies.total = system.energies.hartree + system.energies.exchange
+    system.energies.exchange = xc_energy
+    system.energies.correlation = 0.0
     
-    # For uniform electron gas, the density doesn't change
-    # So we'll just return the same density
-    # In a full implementation, we would:
-    # 1. Construct the Hamiltonian
-    # 2. Diagonalize to get wavefunctions
-    # 3. Compute new density from wavefunctions
+    # For uniform electron gas, add kinetic energy estimate
+    # Kinetic energy from Thomas-Fermi: T = (3/10) * (3*pi^2)^(2/3) * integral(n^(5/3)) dr
+    # For uniform density: T = (3/10) * (3*pi^2)^(2/3) * n^(2/3) * N
+    uniform_density = n_electrons / volume
+    if uniform_density > 0
+        tf_kinetic = (3.0 / 10.0) * (3.0 * pi^2)^(2/3) * uniform_density^(2/3) * n_electrons
+        system.energies.kinetic = tf_kinetic
+    else
+        system.energies.kinetic = 0.0
+    end
     
-    # For now, we'll simulate a simple update
+    # Total energy
+    system.energies.total = system.energies.kinetic + system.energies.hartree + system.energies.exchange
+    
+    # For uniform electron gas, the density remains uniform
+    # This is the correct self-consistent solution for jellium
     new_density_data = copy(system.density.data)
     
     return system.energies.total, new_density_data

@@ -15,7 +15,8 @@ using Test
 using LinearAlgebra
 
 # Include the main module
-include("../src/evcdft.jl")
+push!(LOAD_PATH, joinpath(@__DIR__, ".."))
+include(joinpath(@__DIR__, "..", "src", "evcdft.jl"))
 
 # Use the module
 using .EVC_DFT

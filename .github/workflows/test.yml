@@ -20,19 +20,15 @@ jobs:
       with:
         version: '1.12'
         
-    - name: Install FFTW package
+    - name: Install dependencies and run tests
       run: |
         julia --project=@. -e '
           using Pkg
+          Pkg.develop(path=".")
           Pkg.add("FFTW")
-        '
-        
-    - name: Run comprehensive test suite
-      run: |
-        julia --project=@. -e '
-          # Add src to LOAD_PATH
-          push!(LOAD_PATH, "@.")
-          push!(LOAD_PATH, joinpath(pwd(), "src"))
+          Pkg.add("Test")
+          
+          using Test
           
           # Include and run tests
           include("test/unit_tests.jl")
@@ -47,6 +43,10 @@ jobs:
     - name: Run simple validation
       run: |
         julia --project=@. -e '
+          using Pkg
+          Pkg.develop(path=".")
+          Pkg.add("FFTW")
+          
           include("src/evcdft.jl")
           using .EVC_DFT
           using .EVC_DFT.Constants
@@ -63,3 +63,5 @@ jobs:
           
           println("All basic tests passed!")
         '
+      env:
+        JULIA_NUM_THREADS: auto
