@@ -44,7 +44,7 @@ using EVC_DFT.SelfConsistent
         # Initialize density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test all(≈(expected_density), system.density.data, atol=1e-10)
+        @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
         
         # Compute total energy
         total_energy = compute_total_energy(system)
@@ -60,7 +60,7 @@ using EVC_DFT.SelfConsistent
         @test converged_system.energies.total < 0.0
         
         # For uniform electron gas, density should remain uniform
-        @test all(≈(expected_density), converged_system.density.data, atol=1e-8)
+        @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
     end
     
     @testset "Uniform Electron Gas - Medium System" begin
@@ -106,7 +106,7 @@ using EVC_DFT.SelfConsistent
             # Higher density should have higher (more positive) energy per electron
             # due to increased kinetic energy
             expected_density = n_electrons / (a^3)
-            @test all(≈(expected_density), converged_system.density.data, atol=1e-8)
+            @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
         end
     end
     
@@ -163,7 +163,7 @@ end
         @test !all(system.potential.exchange .== 0.0)
         
         # For uniform density, XC potential should be uniform
-        @test all(≈(xc_pot[1,1,1]), xc_pot, atol=1e-10)
+        @test isapprox(xc_pot, fill(xc_pot[1,1,1], size(xc_pot)); atol=1e-10)
     end
     
     @testset "Energy Components Breakdown" begin
@@ -268,7 +268,7 @@ end
         # Reset to uniform density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test all(≈(expected_density), system.density.data, atol=1e-10)
+        @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
     end
     
     @testset "Multiple Systems" begin
@@ -287,7 +287,7 @@ end
         for (i, system) in enumerate(systems)
             initialize_uniform_density(system)
             expected_density = system.electrons / (system.lattice.volume)
-            @test all(≈(expected_density), system.density.data, atol=1e-10)
+            @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
         end
     end
 end

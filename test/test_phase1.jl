@@ -231,7 +231,7 @@ end
     
     # Check that density is uniform
     expected_density = n_electrons / (a^3)
-    @test all(≈(expected_density), system.density.data, atol=1e-10)
+    @test isapprox(system.density.data, fill(expected_density, size(system.density.data)); atol=1e-10)
     
     # Run SCF with few iterations
     params = SCFParameters(max_iter=5, energy_tolerance=1e-4, density_tolerance=1e-4)
@@ -243,7 +243,7 @@ end
     @test converged_system.energies.total < 0.0  # Should be negative for bound system
     
     # For uniform electron gas, the density should remain uniform
-    @test all(≈(expected_density), converged_system.density.data, atol=1e-8)
+    @test isapprox(converged_system.density.data, fill(expected_density, size(converged_system.density.data)); atol=1e-8)
 end
 
 @testset "System Creation" begin
