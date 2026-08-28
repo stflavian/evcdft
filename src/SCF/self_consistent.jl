@@ -8,7 +8,6 @@ module SelfConsistent
 
 using LinearAlgebra
 using FFTW
-using Printf
 using ..Types: DFTSystem, Lattice, PlaneWaveBasis, ElectronDensity, 
                 ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters
 using ..PlaneWave: compute_hartree_potential, compute_hartree_energy, fft_forward, fft_backward
@@ -308,9 +307,12 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
         density_diff = maximum(abs.(system.density.data - old_density))
         
         # Print iteration info
-        @printf("%5d   %18.10f   %18.2e   %14.2e
+        iter_pad = lpad(string(iteration), 5)
+        energy_pad = lpad(string(round(system.energies.total; digits=10)), 18)
+        ediff_pad = lpad(string(round(energy_diff; digits=2)), 18)
+        ddiff_pad = lpad(string(round(density_diff; digits=2)), 14)
+        println("    ", iter_pad, "   ", energy_pad, "   ", ediff_pad, "   ", ddiff_pad)
 ", 
-                iteration, system.energies.total, energy_diff, density_diff)
         
         # Check convergence
         if check_convergence(system, params, old_energy, old_density)
