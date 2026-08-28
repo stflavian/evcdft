@@ -387,6 +387,24 @@ function parse_value(tokens::Vector{Token}, pos::Int)::Tuple{Union{Nothing, Stri
     elseif token.type == LBRACKET
         # This might be a unit specification, handled elsewhere
         return nothing, pos
+    elseif token.type == BEGIN_BLOCK
+        # Parse { ... } as array literal
+        pos += 1  # Skip {
+        elements = []
+        while pos <= length(tokens) && tokens[pos].type != END_BLOCK
+            if tokens[pos].type == COMMA
+                pos += 1
+                continue
+            end
+            value, pos = parse_value(tokens, pos)
+            if value !== nothing
+                push!(elements, value)
+            end
+        end
+        if pos <= length(tokens) && tokens[pos].type == END_BLOCK
+            pos += 1  # Skip }
+        end
+        return elements, pos
     else
         return nothing, pos + 1
     end
