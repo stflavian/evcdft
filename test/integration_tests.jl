@@ -44,7 +44,7 @@ using EVC_DFT.SelfConsistent
         # Initialize density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test all(≈.(system.density.data, expected_density))
+        @test all(isapprox.(system.density.data, expected_density))
         
         # Compute total energy
         total_energy = compute_total_energy(system)
@@ -60,7 +60,7 @@ using EVC_DFT.SelfConsistent
         @test converged_system.energies.total < 0.0
         
         # For uniform electron gas, density should remain uniform
-        @test all(≈.(converged_system.density.data, expected_density))
+        @test all(isapprox.(converged_system.density.data, expected_density))
     end
     
     @testset "Uniform Electron Gas - Medium System" begin
@@ -106,7 +106,7 @@ using EVC_DFT.SelfConsistent
             # Higher density should have higher (more positive) energy per electron
             # due to increased kinetic energy
             expected_density = n_electrons / (a^3)
-            @test all(≈.(converged_system.density.data, expected_density))
+            @test all(isapprox.(converged_system.density.data, expected_density))
         end
     end
     
@@ -163,7 +163,7 @@ end
         @test !all(system.potential.exchange .== 0.0)
         
         # For uniform density, XC potential should be uniform
-        @test all(≈.(xc_pot, xc_pot[1,1,1]))
+        @test all(isapprox.(xc_pot, xc_pot[1,1,1]))
     end
     
     @testset "Energy Components Breakdown" begin
@@ -268,7 +268,7 @@ end
         # Reset to uniform density
         initialize_uniform_density(system)
         expected_density = n_electrons / (a^3)
-        @test all(≈.(system.density.data, expected_density))
+        @test all(isapprox.(system.density.data, expected_density))
     end
     
     @testset "Multiple Systems" begin
@@ -287,7 +287,7 @@ end
         for (i, system) in enumerate(systems)
             initialize_uniform_density(system)
             expected_density = system.electrons / (system.lattice.volume)
-            @test all(≈.(system.density.data, expected_density))
+            @test all(isapprox.(system.density.data, expected_density))
         end
     end
 end

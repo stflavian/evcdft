@@ -281,7 +281,7 @@ end
         @test all(kinetic .>= 0.0)
         
         # Check that kinetic energy = |G|² / 2
-        @test all(≈.(kinetic, basis.g2 / 2.0))
+        @test all(isapprox.(kinetic, basis.g2 / 2.0))
     end
     
     @testset "FFT Operations" begin
@@ -562,20 +562,20 @@ end
         
         # Linear mixing
         mixed = linear_mixing(new_dens, old_dens, 0.5)
-        @test all(≈.(mixed, 0.15))
+        @test all(isapprox.(mixed, 0.15))
         
         mixed = linear_mixing(new_dens, old_dens, 0.7)
-        @test all(≈.(mixed, 0.17))
+        @test all(isapprox.(mixed, 0.17))
         
         mixed = linear_mixing(new_dens, old_dens, 0.0)
-        @test all(≈.(mixed, 0.1))
+        @test all(isapprox.(mixed, 0.1))
         
         mixed = linear_mixing(new_dens, old_dens, 1.0)
-        @test all(≈.(mixed, 0.2))
+        @test all(isapprox.(mixed, 0.2))
         
         # Kerker mixing (should fall back to linear for now)
         mixed = kerker_mixing(new_dens, old_dens, 0.5)
-        @test all(≈.(mixed, 0.15))
+        @test all(isapprox.(mixed, 0.15))
     end
     
     @testset "Apply Mixing" begin
@@ -585,17 +585,17 @@ end
         # Linear mixing
         params = SCFParameters(mixing_type="linear", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15))
+        @test all(isapprox.(mixed, 0.15))
         
         # Kerker mixing
         params = SCFParameters(mixing_type="kerker", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15))
+        @test all(isapprox.(mixed, 0.15))
         
         # Unknown mixing type (should default to linear)
         params = SCFParameters(mixing_type="unknown", mixing_parameter=0.5)
         mixed = apply_mixing(new_dens, old_dens, params)
-        @test all(≈.(mixed, 0.15))
+        @test all(isapprox.(mixed, 0.15))
     end
     
     @testset "Compute Density from Wavefunctions" begin
@@ -610,7 +610,7 @@ end
         
         @test size(density) == (nx, ny, nz)
         expected = psi1 .^ 2 .+ psi2 .^ 2
-        @test all(≈.(density, expected))
+        @test all(isapprox.(density, expected))
     end
     
     @testset "Initialize Density" begin
@@ -622,7 +622,7 @@ end
         
         @test size(density.data) == (8, 8, 8)
         expected_density = 2.0 / (5.0^3)
-        @test all(≈.(density.data, expected_density))
+        @test all(isapprox.(density.data, expected_density))
     end
     
     @testset "Initialize Uniform Density" begin
@@ -634,7 +634,7 @@ end
         
         @test size(density.data) == (8, 8, 8)
         expected_density = 2.0 / (5.0^3)
-        @test all(≈.(density.data, expected_density))
+        @test all(isapprox.(density.data, expected_density))
     end
     
     @testset "Compute Total Energy" begin

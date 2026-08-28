@@ -75,7 +75,7 @@ jobs:
           
           EVC_DFT.initialize_uniform_density(system)
           expected_density = 2.0 / 125.0
-          @assert all(≈.(system.density.data, expected_density))
+          @assert all(isapprox.(system.density.data, expected_density))
           println("✓ Main module functions work")
           
           # Test 5: Jellium energy
