@@ -7,7 +7,7 @@ and convert them into EVC_DFT data structures.
 
 module InputParser
 
-using ..Types: Lattice, DFTSystem, SCFParameters, PlaneWaveBasis
+using ..Types: Lattice, DFTSystem, SCFParameters, PlaneWaveBasis, AtomicSystem
 using ..HSDParser: HSDNode, parse_hsd_file, parse_hsd_string, get_node, get_value
 using ..EVC_DFT: create_uniform_electron_gas, jellium_total_energy
 using ..Constants
@@ -24,15 +24,17 @@ export parse_input_file, run_from_input, InputConfig
     - hamiltonian: Hamiltonian configuration
     - options: Options configuration
     - driver: Driver configuration
+    - net_charge: Net charge of the system (default: 0)
 """
 struct InputConfig
     geometry::Dict{String, Any}
     hamiltonian::Dict{String, Any}
     options::Dict{String, Any}
     driver::Dict{String, Any}
+    net_charge::Int
     
     function InputConfig()
-        new(Dict(), Dict(), Dict(), Dict())
+        new(Dict(), Dict(), Dict(), Dict(), 0)
     end
 end
 
@@ -68,6 +70,13 @@ function extract_config(root::HSDNode)::InputConfig
         config.driver = extract_driver(root.children["Driver"])
     end
     
+    # Extract net charge from Driver or Geometry
+    if haskey(config.driver, "NetCharge")
+        config.net_charge = Int(config.driver["NetCharge"])
+    elseif haskey(config.geometry, "NetCharge")
+        config.net_charge = Int(config.geometry["NetCharge"])
+    end
+    
     return config
 end
 
@@ -90,9 +99,30 @@ function extract_geometry(geometry_node::HSDNode)::Dict{String, Any}
         config["ElectronGas"] = extract_electron_gas(eg_node)
     end
     
-    # Check for atomic positions (for future)
-    if haskey(geometry_node.children, "Positions")
-        config["Positions"] = extract_positions(geometry_node.children["Positions"])
+    # Check for TypeNames (DFTB+ format for atomic systems)
+    if haskey(geometry_node.children, "TypeNames")
+        type_names_node = geometry_node.children["TypeNames"]
+        config["TypeNames"] = extract_type_names(type_names_node)
+    end
+    
+    # Check for TypesAndCoordinates (DFTB+ format for atomic systems)
+    if haskey(geometry_node.children, "TypesAndCoordinates")
+        tac_node = geometry_node.children["TypesAndCoordinates"]
+        units = tac_node.units
+        config["TypesAndCoordinates"] = extract_types_and_coordinates(tac_node, units)
+    end
+    
+    # Check for Periodic flag
+    if haskey(geometry_node.children, "Periodic")
+        periodic_node = geometry_node.children["Periodic"]
+        config["Periodic"] = get_value(periodic_node)
+    else
+        config["Periodic"] = true  # Default to periodic
+    end
+    
+    # Check for NetCharge in Geometry block
+    if haskey(geometry_node.children, "NetCharge")
+        config["NetCharge"] = get_value(geometry_node.children["NetCharge"])
     end
     
     return config
@@ -168,7 +198,68 @@ function extract_electron_gas(node::HSDNode)::Dict{String, Any}
 end
 
 """
-    Extract atomic positions (for future use).
+    Extract type names from TypeNames block (DFTB+ format).
+    
+    Args:
+    - node: HSDNode for TypeNames block
+    
+    Returns:
+    - Vector of species names (Strings)
+"""
+function extract_type_names(node::HSDNode)::Vector{String}
+    if node.value isa Vector
+        return String.(node.value)
+    elseif node.value isa String
+        # Could be space-separated or comma-separated
+        return split(node.value)
+    else
+        # Try to extract from children
+        names = String[]
+        for (key, child) in node.children
+            val = get_value(child)
+            if val isa String
+                push!(names, val)
+            end
+        end
+        return names
+    end
+end
+
+"""
+    Extract types and coordinates from TypesAndCoordinates block (DFTB+ format).
+    
+    Args:
+    - node: HSDNode for TypesAndCoordinates block
+    - units: Units specification (e.g., "Angstrom")
+    
+    Returns:
+    - Matrix of type indices and coordinates (N_atoms x 4)
+"""
+function extract_types_and_coordinates(node::HSDNode, units::String)::Matrix{Float64}
+    n_atoms = length(node.children)
+    result = zeros(Float64, n_atoms, 4)
+    
+    for (idx, (key, child)) in enumerate(node.children)
+        # Parse the value: could be "1 0.0 0.0 0.0" or [1, 0.0, 0.0, 0.0]
+        val = get_value(child)
+        if val isa Vector
+            result[idx, :] = Float64.(val)
+        elseif val isa String
+            parts = parse.(Float64, split(val))
+            result[idx, :] = parts
+        end
+    end
+    
+    # Convert coordinates from units to Bohr if needed
+    if units == "Angstrom" || units == "angstrom"
+        result[:, 2:4] .*= angstrom_to_bohr
+    end
+    
+    return result
+end
+
+"""
+    Extract atomic positions (for compatibility, deprecated in favor of TypesAndCoordinates).
 """
 function extract_positions(node::HSDNode)::Vector{Dict{String, Any}}
     positions = Vector{Dict{String, Any}}()
@@ -268,6 +359,20 @@ function validate_input(config::InputConfig)
         error("Geometry block must contain LatticeVectors or ElectronGas")
     end
     
+    # For atomic systems
+    if haskey(config.geometry, "TypeNames") && haskey(config.geometry, "TypesAndCoordinates")
+        if !haskey(config.geometry, "LatticeVectors")
+            error("LatticeVectors required for atomic systems")
+        end
+        if length(config.geometry["TypeNames"]) == 0
+            error("TypeNames must contain at least one species")
+        end
+        if size(config.geometry["TypesAndCoordinates"], 1) == 0
+            error("TypesAndCoordinates must contain at least one atom")
+        end
+    end
+    
+    # For jellium
     if haskey(config.geometry, "ElectronGas")
         if !haskey(config.geometry["ElectronGas"], "NumElectrons")
             error("ElectronGas block must contain NumElectrons")
@@ -332,6 +437,26 @@ function build_scf_parameters(config::InputConfig)::SCFParameters
 end
 
 """
+    Build an AtomicSystem from input configuration.
+    
+    Args:
+    - config: InputConfig
+    
+    Returns:
+    - AtomicSystem object
+"""
+function build_atomic_system(config::InputConfig)::AtomicSystem
+    lattice = build_lattice(config)
+    species_names = config.geometry["TypeNames"]
+    types_and_coords = config.geometry["TypesAndCoordinates"]
+    periodic = get(config.geometry, "Periodic", true)
+    net_charge = config.net_charge
+    
+    return AtomicSystem(lattice, species_names, types_and_coords,
+                       net_charge=net_charge, periodic=periodic)
+end
+
+"""
     Build a DFTSystem from input configuration.
     
     Args:
@@ -341,19 +466,28 @@ end
     - DFTSystem object
 """
 function build_system(config::InputConfig)::DFTSystem
-    # For now, we only support uniform electron gas (jellium)
-    # Future: support atomic systems
-    
+    # For jellium (uniform electron gas)
     if haskey(config.geometry, "ElectronGas")
-        # Uniform electron gas calculation
         lattice = build_lattice(config)
         n_electrons = config.geometry["ElectronGas"]["NumElectrons"]
         cutoff = config.options["EnergyCutoff"]
         fft_size = config.options["FFTGrid"]
         
         return create_uniform_electron_gas(lattice.a1[1], n_electrons, cutoff, fft_size)
+    # For atomic systems
+    elseif haskey(config.geometry, "TypeNames") && haskey(config.geometry, "TypesAndCoordinates")
+        atomic_system = build_atomic_system(config)
+        lattice = atomic_system.lattice
+        cutoff = config.options["EnergyCutoff"]
+        fft_size = config.options["FFTGrid"]
+        
+        # Create plane wave basis
+        basis = PlaneWaveBasis(lattice, cutoff, fft_size)
+        
+        # Create DFT system with atomic system
+        return DFTSystem(lattice, basis, atomic_system)
     else
-        error("Only ElectronGas (jellium) calculations are supported in Phase 1")
+        error("Geometry must contain ElectronGas or (TypeNames and TypesAndCoordinates)")
     end
 end
 
@@ -441,7 +575,17 @@ function print_summary(result::DFTSystem, config::InputConfig)
     println("    a1 = $(result.lattice.a1)")
     println("    a2 = $(result.lattice.a2)")
     println("    a3 = $(result.lattice.a3)")
-    println("  Volume = $(result.lattice.volume) Bohr³")
+    println("  Volume = $(result.lattice.volume) Bohr^3")
+    
+    # Atomic system info
+    if result.atomic_system !== nothing
+        println("\nAtomic System:")
+        println("  Number of atoms = $(length(result.atomic_system.atoms))")
+        println("  Species = $(result.atomic_system.species_names)")
+        println("  Total nuclear charge = $(result.atomic_system.total_nuclear_charge)")
+        println("  Net charge = $(result.atomic_system.net_charge)")
+        println("  Periodic = $(result.atomic_system.periodic)")
+    end
     
     # Electrons
     println("\nElectrons:")
@@ -459,7 +603,7 @@ function print_summary(result::DFTSystem, config::InputConfig)
     scf_config = get(config.options, "SCF", Dict())
     println("  Max iterations = $(get(scf_config, "MaxIter", 100))")
     println("  Energy tolerance = $(get(scf_config, "EnergyTolerance", 1e-6)) Hartree")
-    println("  Density tolerance = $(get(scf_config, "DensityTolerance", 1e-6)) Bohr⁻³")
+    println("  Density tolerance = $(get(scf_config, "DensityTolerance", 1e-6)) Bohr^-3")
     println("  Mixing = $(get(scf_config, "Mixing", "Linear"))")
     println("  Mixing parameter = $(get(scf_config, "MixingParameter", 0.5))")
     
