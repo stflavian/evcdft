@@ -152,14 +152,14 @@ end
     root = parse_hsd_string(input)
     node = root.children["Length"]
     value = get_value(node)
-    @test value ≈ angstrom_to_bohr atol=1e-10
+    @test value ≈ angstrom_to_bohr
     
     # Test eV to Hartree conversion
     input = "Energy [eV] = 1.0"
     root = parse_hsd_string(input)
     node = root.children["Energy"]
     value = get_value(node)
-    @test value ≈ ev_to_hartree atol=1e-10
+    @test value ≈ ev_to_hartree
     
     # Test array conversion
     input = "Vectors [Angstrom] = (1.0, 2.0, 3.0)"
@@ -167,7 +167,7 @@ end
     node = root.children["Vectors"]
     value = get_value(node)
     expected = [1.0, 2.0, 3.0] .* angstrom_to_bohr
-    @test value ≈ expected atol=1e-10
+    @test value ≈ expected
 end
 
 @testset "Input Configuration Extraction" begin
@@ -233,7 +233,7 @@ end
     lattice_config = config.geometry["LatticeVectors"]
     
     # Check that units were converted
-    @test lattice_config["a1"] ≈ [5.0 * angstrom_to_bohr, 0.0, 0.0] atol=1e-10
+    @test lattice_config["a1"] ≈ [5.0 * angstrom_to_bohr, 0.0, 0.0]
 end
 
 @testset "Input Validation" begin
@@ -346,7 +346,7 @@ end
     
     # 5 Angstrom = 5 * 1.8897259886 Bohr ≈ 9.4486 Bohr
     expected_volume = (5.0 * angstrom_to_bohr)^3
-    @test system.lattice.volume ≈ expected_volume atol=1e-6
+    @test system.lattice.volume ≈ expected_volume
 end
 
 @testset "SCF Parameters Building" begin

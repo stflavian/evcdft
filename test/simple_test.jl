@@ -63,7 +63,7 @@ println("Testing jellium energy...")
 rs = 2.0
 energy = jellium_energy_per_electron(rs)
 @assert isfinite(energy)
-@assert energy ≈ 0.111 atol=0.01
+@assert energy ≈ 0.111
 println("✓ Jellium energy works")
 
 println("\n=== All tests passed! ===")
