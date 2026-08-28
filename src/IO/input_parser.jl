@@ -26,7 +26,7 @@ export parse_input_file, run_from_input, InputConfig
     - driver: Driver configuration
     - net_charge: Net charge of the system (default: 0)
 """
-struct InputConfig
+mutable struct InputConfig
     geometry::Dict{String, Any}
     hamiltonian::Dict{String, Any}
     options::Dict{String, Any}
