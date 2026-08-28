@@ -45,7 +45,7 @@ end
     - units: Units specification (e.g., "Angstrom", "Ha")
     - is_array: Whether this node represents an array
 """
-struct HSDNode
+mutable struct HSDNode
     name::String
     value::Union{Nothing, String, Float64, Int, Vector{Float64}, Vector{Int}, Vector{String}}
     children::Dict{String, HSDNode}
