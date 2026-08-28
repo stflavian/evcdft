@@ -317,7 +317,7 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
         # Check convergence
         if check_convergence(system, params, old_energy, old_density)
             println()
-            println("SCF converged in " * string(iteration) * " iterations")
+            println("SCF converged in $iteration iterations")
             break
         end
     end
