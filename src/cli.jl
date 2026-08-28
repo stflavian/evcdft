@@ -24,7 +24,7 @@ export main
         julia --project -e 'using EVC_DFT; main()' --help
 """
 function main()
-    args = ARGV
+    args = Base.ARGV
     
     # Check for help flag
     if "--help" in args || "-h" in args
@@ -129,7 +129,7 @@ Input File:
         LatticeVectors [Angstrom] = {
             2.713546 2.713546 0.0
             0.0 2.713546 2.713546
-            2.713546 0.0 2.713546
+            2.713556 0.0 2.713546
         }
     }
     
