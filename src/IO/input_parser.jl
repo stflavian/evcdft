@@ -15,10 +15,6 @@ using ..Units
 
 # Export main functions
 export parse_input_file, run_from_input, InputConfig
-    println("Driver keys: ", keys(config.driver))
-    println("Net charge: ", config.net_charge)
-    println("="^60 * "\n")
-end
 
 """
     Configuration structure extracted from input file.
@@ -40,9 +36,6 @@ mutable struct InputConfig
     function InputConfig()
         new(Dict(), Dict(), Dict(), Dict(), 0)
     end
-    println("Net charge: ", config.net_charge)
-    println("="^60 * "\n")
-end
 end
 
 """
@@ -371,7 +364,6 @@ function validate_input(config::InputConfig)
     # For both, LatticeVectors can be present
     has_atomic = haskey(config.geometry, "TypeNames") && haskey(config.geometry, "TypesAndCoordinates")
     has_jellium = haskey(config.geometry, "ElectronGas")
-    has_lattice = haskey(config.geometry, "LatticeVectors")
     
     if !has_atomic && !has_jellium
         error("Geometry block must contain ElectronGas or (TypeNames and TypesAndCoordinates)")
