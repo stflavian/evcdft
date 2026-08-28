@@ -4,6 +4,7 @@ This can be run directly to verify the package works.
 """
 
 # Include the main module
+using Test
 push!(LOAD_PATH, joinpath(@__DIR__, ".."))
 include(joinpath(@__DIR__, "..", "src", "EVC_DFT.jl"))
 
