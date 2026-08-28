@@ -1,4 +1,16 @@
-# EVC_DFT - Density Functional Theory Calculator in Julia
+# Experimental Vibe Code Density Functional Theory
+
+> [!CAUTION]
+> This repository is a testing ground for the current capabilities of large language
+> models in the field of computational material science and computational chemistry. 
+> The code here is almost entirely written by Mistral's Vibe Code, using Mistral 
+> Medium 3.5, with minimal intervention from my side. The purpose of the project is 
+> not to create a working product, nor to learn about Density Functional Theory, but
+> to find the gaps in the knowledge of these models, and to see what can be automated 
+> and what can't. Intervention from my side only happens when the model struggles so 
+> much with something that the project can no longer advance. The code is currently
+> only evaluated using the tests written by Vibe Code, and thus might not be safe to 
+> run. BEWARE!
 
 A modular, extensible DFT calculator implemented in Julia. Currently supports **uniform electron gas (jellium) calculations** with plane wave basis sets and LDA exchange-correlation functionals.
 
