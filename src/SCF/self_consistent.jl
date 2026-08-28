@@ -312,8 +312,6 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
         ediff_pad = lpad(string(round(energy_diff; digits=2)), 18)
         ddiff_pad = lpad(string(round(density_diff; digits=2)), 14)
         println("    ", iter_pad, "   ", energy_pad, "   ", ediff_pad, "   ", ddiff_pad)
-", 
-        
         # Check convergence
         if check_convergence(system, params, old_energy, old_density)
             println()
