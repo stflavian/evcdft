@@ -3,6 +3,7 @@ Command-line interface for EVC_DFT.
 
 This module provides a simple CLI to run DFT calculations from input files.
 Usage:
+    julia --project cli.jl <input.hsd>
     julia --project -e 'using EVC_DFT; main()' <input.hsd>
 """
 
@@ -18,16 +19,12 @@ export main
     Main entry point for the CLI.
     
     Usage:
+        julia --project cli.jl <input.hsd>
         julia --project -e 'using EVC_DFT; main()' <input.hsd>
         julia --project -e 'using EVC_DFT; main()' --help
 """
 function main()
     args = ARGV
-    
-    if length(args) == 0
-        interactive_mode()
-        return
-    end
     
     # Check for help flag
     if "--help" in args || "-h" in args
@@ -40,7 +37,14 @@ function main()
         return
     end
     
-    # Get input file
+    # Check if input file is provided
+    if length(args) == 0
+        println("Error: No input file provided")
+        print_usage()
+        return
+    end
+    
+    # Get input file (first non-flag argument)
     input_file = args[1]
     
     # Check if file exists
@@ -54,10 +58,11 @@ function main()
     try
         result = run_from_input(input_file)
         println("\nCalculation completed successfully!")
+        return result
     catch e
         println("\nError during calculation:")
         showerror(stdout, e)
-        return
+        return nothing
     end
 end
 
@@ -69,6 +74,7 @@ function print_usage()
 EVC_DFT - Density Functional Theory Calculator
 
 Usage:
+    julia --project cli.jl <input.hsd>
     julia --project -e 'using EVC_DFT; main()' <input.hsd>
 
 Options:
@@ -111,8 +117,30 @@ Input File:
         CalculationType = "Jellium"
     }
 
-Supported Features (Phase 1):
-    - Uniform electron gas (jellium) calculations
+    Example (atomic system, Phase 2A):
+    --------------------------------
+    Geometry = {
+        TypeNames = { "Ga" "As" }
+        TypesAndCoordinates [Angstrom] = {
+            1 0.0 0.0 0.0
+            2 1.356773 1.356773 1.356773
+        }
+        Periodic = Yes
+        LatticeVectors [Angstrom] = {
+            2.713546 2.713546 0.0
+            0.0 2.713546 2.713546
+            2.713546 0.0 2.713546
+        }
+    }
+    
+    Options = {
+        EnergyCutoff [Ha] = 10.0
+        FFTGrid = (16, 16, 16)
+    }
+
+Supported Features:
+    Phase 1: Uniform electron gas (jellium) calculations
+    Phase 2A: Atomic systems with periodic boundary conditions (Gamma-point only)
     - LDA exchange-correlation (Perdew-Zunger)
     - Plane wave basis sets
     - Linear and Kerker density mixing
@@ -126,48 +154,9 @@ end
     Print version information.
 """
 function print_version()
-    println("EVC_DFT v0.1.0")
-    println("Phase 1: Uniform Electron Gas (Jellium)")
+    println("EVC_DFT v0.2.0")
+    println("Phase 2A: Atomic Systems with Periodic Boundary Conditions")
     println("GitHub: https://github.com/stflavian/evcdft")
-end
-
-"""
-    Interactive mode for testing.
-    
-    This allows running calculations interactively without command-line arguments.
-"""
-function interactive_mode()
-    println("EVC_DFT Interactive Mode")
-    println("Enter 'help' for commands, 'quit' to exit")
-    
-    while true
-        print("evcdft> ")
-        input = readline()
-        
-        if input == "quit" || input == "exit" || input == "q"
-            break
-        elseif input == "help" || input == "h"
-            println("Commands:")
-            println("  run <file>    - Run calculation from input file")
-            println("  test          - Run test suite")
-            println("  version       - Show version")
-            println("  quit          - Exit")
-        elseif startswith(input, "run ")
-            filename = input[5:end]
-            if isfile(filename)
-                result = run_from_input(filename)
-            else
-                println("Error: File '$filename' not found")
-            end
-        elseif input == "test"
-            println("Running tests...")
-            include("test/test_phase1.jl")
-        elseif input == "version"
-            print_version()
-        else
-            println("Unknown command. Type 'help' for available commands.")
-        end
-    end
 end
 
 end # module CLI
