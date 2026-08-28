@@ -22,7 +22,7 @@ export main
         julia --project -e 'using EVC_DFT; main()' --help
 """
 function main()
-    args = Base.ARGV
+    args = ARGV
     
     if length(args) == 0
         interactive_mode()
