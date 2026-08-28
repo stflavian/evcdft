@@ -11,7 +11,7 @@ Atomic units:
 module Constants
 
 # Fundamental constants in SI units
-const hbar_SI = 1.0545718176461565e-34      # Reduced Planck constant (J\u00b7s)
+const hbar_SI = 1.0545718176461565e-34      # Reduced Planck constant (J·s)
 const m_e_SI = 9.109383701528254e-31     # Electron mass (kg)
 const e_SI = 1.602176634e-19             # Elementary charge (C)
 const epsilon0_SI = 8.854187812890987e-12     # Vacuum permittivity (F/m)
@@ -28,8 +28,8 @@ const e = 1.0      # Elementary charge (atomic units)
 const epsilon0 = 1.0/(4 * Base.MathConstants.pi) # Vacuum permittivity (atomic units)
 
 # Conversion factors
-const angstrom_to_bohr = 1.0 / 0.5291772109038427   # 1 \u00c5 = 1.8897259886 a0
-const bohr_to_angstrom = 0.5291772109038427        # 1 a0 = 0.529177 \u00c5
+const angstrom_to_bohr = 1.0 / 0.5291772109038427   # 1 Å = 1.8897259886 a0
+const bohr_to_angstrom = 0.5291772109038427        # 1 a0 = 0.529177 Å
 
 const hartree_to_ev = 27.211386245988     # 1 Ha = 27.2114 eV
 const ev_to_hartree = 1.0 / 27.211386245988
@@ -57,7 +57,7 @@ const ryberg = 0.5  # 1 Ry = 0.5 Ha
 const mu_B = 0.5  # mu_B = e hbar / (2 m_e) in atomic units
 
 # Fine structure constant
-const alpha = e_SI^2 / (4 * pi * epsilon0_SI * hbar_SI * c_SI)  # \u2248 1/137
+const alpha = e_SI^2 / (4 * pi * epsilon0_SI * hbar_SI * c_SI)  # ≈ 1/137
 
 # Atomic numbers for common elements (hardcoded for convenience)
 const ATOMIC_NUMBERS = Dict{String, Int}(

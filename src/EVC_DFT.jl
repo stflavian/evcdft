@@ -113,7 +113,7 @@ end
     Calculate the total energy for a uniform electron gas.
     
     For a uniform electron gas (jellium), the total energy per electron is:
-    E/N = (2.8376/rs^2) - (0.9163/rs) + \u03b5_c(rs)
+    E/N = (2.8376/rs^2) - (0.9163/rs) + epsilon_c(rs)
     where rs is the Wigner-Seitz radius.
     
     Args:
@@ -130,7 +130,7 @@ function jellium_energy_per_electron(rs::Float64)
     exchange = -0.9163 / rs
     
     # Correlation energy (Perdew-Zunger)
-    correlation = lda_correlation_energy(3.0 / (4\u03c0 * rs^3))
+    correlation = lda_correlation_energy(3.0 / (4π * rs^3))
     
     return kinetic + exchange + correlation
 end
@@ -149,7 +149,7 @@ function jellium_total_energy(system::DFTSystem)
     if system.basis isa PlaneWaveBasis
         # For uniform electron gas
         volume = system.lattice.volume
-        rs = (3.0 / (4\u03c0 * (system.electrons / volume)))^(1/3)
+        rs = (3.0 / (4π * (system.electrons / volume)))^(1/3)
         return system.electrons * jellium_energy_per_electron(rs)
     else
         error("System is not a uniform electron gas")
