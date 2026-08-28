@@ -25,7 +25,7 @@ function main()
     args = Base.ARGV
     
     if length(args) == 0
-        print_usage()
+        interactive_mode()
         return
     end
     
