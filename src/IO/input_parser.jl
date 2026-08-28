@@ -66,6 +66,33 @@ mutable struct InputConfig
     function InputConfig()
         new(Dict(), Dict(), Dict(), Dict(), 0)
     end
+
+"""
+    Print debug information about the parsed input configuration.
+"""
+function debug_config(config::InputConfig)
+    println("\n" * "="^60)
+    println("DEBUG: Input Configuration")
+    println("="^60)
+    println("Geometry keys: ", keys(config.geometry))
+    if haskey(config.geometry, "LatticeVectors")
+        println("  LatticeVectors: ", config.geometry["LatticeVectors"])
+    end
+    if haskey(config.geometry, "ElectronGas")
+        println("  ElectronGas: ", config.geometry["ElectronGas"])
+    end
+    if haskey(config.geometry, "TypeNames")
+        println("  TypeNames: ", config.geometry["TypeNames"])
+    end
+    if haskey(config.geometry, "TypesAndCoordinates")
+        println("  TypesAndCoordinates: ", config.geometry["TypesAndCoordinates"])
+    end
+    println("Hamiltonian keys: ", keys(config.hamiltonian))
+    println("Options keys: ", keys(config.options))
+    println("Driver keys: ", keys(config.driver))
+    println("Net charge: ", config.net_charge)
+    println("="^60 * "\n")
+end
 end
 
 """
