@@ -15,24 +15,6 @@ using ..Units
 
 # Export main functions
 export parse_input_file, run_from_input, InputConfig
-
-"""
-    Print debug information about the parsed input configuration.
-    
-    Args:
-    - config: InputConfig to debug
-"""
-    if haskey(config.geometry, "ElectronGas")
-        println("  ElectronGas: ", config.geometry["ElectronGas"])
-    end
-    if haskey(config.geometry, "TypeNames")
-        println("  TypeNames: ", config.geometry["TypeNames"])
-    end
-    if haskey(config.geometry, "TypesAndCoordinates")
-        println("  TypesAndCoordinates: ", config.geometry["TypesAndCoordinates"])
-    end
-    println("Hamiltonian keys: ", keys(config.hamiltonian))
-    println("Options keys: ", keys(config.options))
     println("Driver keys: ", keys(config.driver))
     println("Net charge: ", config.net_charge)
     println("="^60 * "\n")
@@ -58,22 +40,6 @@ mutable struct InputConfig
     function InputConfig()
         new(Dict(), Dict(), Dict(), Dict(), 0)
     end
-
-"""
-    Print debug information about the parsed input configuration.
-"""
-    if haskey(config.geometry, "ElectronGas")
-        println("  ElectronGas: ", config.geometry["ElectronGas"])
-    end
-    if haskey(config.geometry, "TypeNames")
-        println("  TypeNames: ", config.geometry["TypeNames"])
-    end
-    if haskey(config.geometry, "TypesAndCoordinates")
-        println("  TypesAndCoordinates: ", config.geometry["TypesAndCoordinates"])
-    end
-    println("Hamiltonian keys: ", keys(config.hamiltonian))
-    println("Options keys: ", keys(config.options))
-    println("Driver keys: ", keys(config.driver))
     println("Net charge: ", config.net_charge)
     println("="^60 * "\n")
 end
