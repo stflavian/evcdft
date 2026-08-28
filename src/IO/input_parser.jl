@@ -22,14 +22,6 @@ export parse_input_file, run_from_input, InputConfig
     Args:
     - config: InputConfig to debug
 """
-function debug_config(config::InputConfig)
-    println("\n" * "="^60)
-    println("DEBUG: Input Configuration")
-    println("="^60)
-    println("Geometry keys: ", keys(config.geometry))
-    if haskey(config.geometry, "LatticeVectors")
-        println("  LatticeVectors: ", config.geometry["LatticeVectors"])
-    end
     if haskey(config.geometry, "ElectronGas")
         println("  ElectronGas: ", config.geometry["ElectronGas"])
     end
@@ -70,14 +62,6 @@ mutable struct InputConfig
 """
     Print debug information about the parsed input configuration.
 """
-function debug_config(config::InputConfig)
-    println("\n" * "="^60)
-    println("DEBUG: Input Configuration")
-    println("="^60)
-    println("Geometry keys: ", keys(config.geometry))
-    if haskey(config.geometry, "LatticeVectors")
-        println("  LatticeVectors: ", config.geometry["LatticeVectors"])
-    end
     if haskey(config.geometry, "ElectronGas")
         println("  ElectronGas: ", config.geometry["ElectronGas"])
     end
