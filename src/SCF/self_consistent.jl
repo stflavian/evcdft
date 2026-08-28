@@ -283,6 +283,13 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
     println(" iSCF   Total Energy (Ha)    Energy Diff (Ha)    Density Diff")
     println("-"^78)
     
+    # Print SCF header
+    println("
+***  SCF Iterations")
+    println()
+    println(" iSCF   Total Energy (Ha)    Energy Diff (Ha)    Density Diff")
+    println("-"^78)
+    
     # SCF loop
     for iteration in 1:params.max_iter
         # Store current density and energy

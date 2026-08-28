@@ -631,14 +631,14 @@ function print_summary(result::DFTSystem, config::InputConfig)
     println("="^78)
     println()
     
-    # Energy output (DFTB+ style)
+    # Energy output
     total_ha = result.energies.total
     total_ev = total_ha * hartree_to_ev
     
-    @printf("Total Energy:                   %18.10f H  %18.6f eV\n", total_ha, total_ev)
-    @printf("Hartree Energy:                %18.10f H\n", result.energies.hartree)
-    @printf("Exchange Energy:               %18.10f H\n", result.energies.exchange)
-    @printf("Correlation Energy:            %18.10f H\n", result.energies.correlation)
+    println("Total Energy:                   ", lpad(string(round(total_ha; digits=10)), 18), " H  ", lpad(string(round(total_ev; digits=6)), 18), " eV")
+    println("Hartree Energy:                ", lpad(string(round(result.energies.hartree; digits=10)), 18), " H")
+    println("Exchange Energy:               ", lpad(string(round(result.energies.exchange; digits=10)), 18), " H")
+    println("Correlation Energy:            ", lpad(string(round(result.energies.correlation; digits=10)), 18), " H")
     
     println()
     println("="^78)
