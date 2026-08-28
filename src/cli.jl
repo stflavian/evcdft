@@ -16,6 +16,23 @@ using ..EVC_DFT: DFTSystem
 export main
 
 """
+    Print the EVC_DFT header.
+"""
+function print_header()
+    println("="^78)
+    println("|")
+    println("|  EVC_DFT - All-Electron Density Functional Theory")
+    println("|")
+    println("|  Copyright (C) 2024  EVC_DFT developers")
+    println("|")
+    println("|  When publishing results obtained with EVC_DFT, please cite:")
+    println("|  * EVC_DFT: A Julia implementation of all-electron DFT")
+    println("|")
+    println("="^78)
+    println()
+end
+
+"""
     Main entry point for the CLI.
     
     Usage:
@@ -25,6 +42,10 @@ export main
 """
 function main()
     args = ARGS
+    
+    # Print header
+    print_header()
+    
     
     # Check for help flag
     if "--help" in args || "-h" in args

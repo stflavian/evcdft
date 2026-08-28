@@ -8,6 +8,7 @@ module SelfConsistent
 
 using LinearAlgebra
 using FFTW
+using Printf
 using ..Types: DFTSystem, Lattice, PlaneWaveBasis, ElectronDensity, 
                 ElectronDensityReciprocal, KohnShamPotential, EnergyComponents, SCFParameters
 using ..PlaneWave: compute_hartree_potential, compute_hartree_energy, fft_forward, fft_backward
@@ -275,6 +276,13 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
     old_density = copy(system.density.data)
     old_energy = 0.0
     
+    # Print SCF header
+    println("
+***  SCF Iterations")
+    println()
+    println(" iSCF   Total Energy (Ha)    Energy Diff (Ha)    Density Diff")
+    println("-"^78)
+    
     # SCF loop
     for iteration in 1:params.max_iter
         # Store current density and energy
@@ -288,14 +296,20 @@ function run_scf!(system::DFTSystem, params::SCFParameters)
         system.density.data .= apply_mixing(new_density, old_density, params)
         system.energies.total = new_energy
         
+        # Calculate differences for output
+        energy_diff = abs(system.energies.total - old_energy)
+        density_diff = maximum(abs.(system.density.data - old_density))
+        
+        # Print iteration info
+        @printf("%5d   %18.10f   %18.2e   %14.2e
+", 
+                iteration, system.energies.total, energy_diff, density_diff)
+        
         # Check convergence
         if check_convergence(system, params, old_energy, old_density)
+            println()
             @info "SCF converged in $iteration iterations"
             break
-        end
-        
-        if iteration % 10 == 0
-            @info "SCF iteration $iteration: Energy = $(system.energies.total) Ha"
         end
     end
     

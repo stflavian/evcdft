@@ -550,12 +550,63 @@ end
     - Converged DFTSystem with results
 """
 function run_from_input(filename::String)::DFTSystem
+    # Print input file info
+    println("Reading input file '$filename'")
+    println("Parser version: 1")
+    println()
+    
     # Parse input
     system = parse_input_file(filename)
     
     # Get SCF parameters
     config = extract_config(parse_hsd_file(filename))
     params = build_scf_parameters(config)
+    
+    # Print settings
+    println("Starting initialization...")
+    println("-"^78)
+    
+    # Print calculation mode
+    if system.atomic_system !== nothing
+        println("Mode:                        Atomic system")
+    else
+        println("Mode:                        Uniform electron gas (Jellium)")
+    end
+    
+    # Print system info
+    println("Periodic boundaries:         $(system.atomic_system !== nothing ? system.atomic_system.periodic : true)")
+    println("Number of electrons:        $(system.electrons)")
+    
+    if system.atomic_system !== nothing
+        println("Number of atoms:            $(length(system.atomic_system.atoms))")
+        println("Species:                    $(join(system.atomic_system.species_names, ", "))")
+        println("Total nuclear charge:       $(system.atomic_system.total_nuclear_charge)")
+    end
+    
+    println("Lattice vectors [Bohr]:")
+    println("  a1 = $(system.lattice.a1)")
+    println("  a2 = $(system.lattice.a2)")
+    println("  a3 = $(system.lattice.a3)")
+    println("Cell volume:                $(system.lattice.volume) Bohr^3")
+    println()
+    
+    # Print basis info
+    println("Energy cutoff:              $(system.basis.cutoff) Ha")
+    println("FFT grid:                   $(system.basis.fft_size)")
+    println("Number of G-vectors:        $(system.basis.n_g)")
+    println()
+    
+    # Print SCF parameters
+    println("Max. SCF iterations:        $(params.max_iter)")
+    println("Energy tolerance:           $(params.energy_tolerance) Ha")
+    println("Density tolerance:         $(params.density_tolerance)")
+    println("Mixer:                     $(params.mixing_type)")
+    println("Mixing parameter:          $(params.mixing_parameter)")
+    
+    hamiltonian_type = get(config.hamiltonian, "XCFunctional", "LDA-PZ")
+    println("Hamiltonian:               $hamiltonian_type")
+    println("-"^78)
+    println()
     
     # Run SCF
     println("Running SCF calculation from input file: $filename")
@@ -575,27 +626,23 @@ end
     - config: InputConfig used for the calculation
 """
 function print_summary(result::DFTSystem, config::InputConfig)
-    println("\n" * "="^60)
-    println("EVC_DFT - Calculation Summary")
-    println("="^60)
+    println("\n" * "="^78)
+    println("Results:")
+    println("="^78)
+    println()
     
-    # Geometry
-    println("\nGeometry:")
-    println("  Lattice vectors:")
-    println("    a1 = $(result.lattice.a1)")
-    println("    a2 = $(result.lattice.a2)")
-    println("    a3 = $(result.lattice.a3)")
-    println("  Volume = $(result.lattice.volume) Bohr^3")
+    # Energy output (DFTB+ style)
+    total_ha = result.energies.total
+    total_ev = total_ha * hartree_to_ev
     
-    # Atomic system info
-    if result.atomic_system !== nothing
-        println("\nAtomic System:")
-        println("  Number of atoms = $(length(result.atomic_system.atoms))")
-        println("  Species = $(result.atomic_system.species_names)")
-        println("  Total nuclear charge = $(result.atomic_system.total_nuclear_charge)")
-        println("  Net charge = $(result.atomic_system.net_charge)")
-        println("  Periodic = $(result.atomic_system.periodic)")
-    end
+    @printf("Total Energy:                   %18.10f H  %18.6f eV\n", total_ha, total_ev)
+    @printf("Hartree Energy:                %18.10f H\n", result.energies.hartree)
+    @printf("Exchange Energy:               %18.10f H\n", result.energies.exchange)
+    @printf("Correlation Energy:            %18.10f H\n", result.energies.correlation)
+    
+    println()
+    println("="^78)
+end
     
     # Electrons
     println("\nElectrons:")
