@@ -18,3 +18,19 @@ Geometry = {
 Hamiltonian = DFT {
     XCFunctional = "LDA-PZ"
 }
+
+Options = {
+    EnergyCutoff [Ha] = 10.0
+    FFTGrid = (16, 16, 16)
+    SCF {
+        MaxIter = 50
+        EnergyTolerance = 1e-8
+        DensityTolerance = 1e-8
+        Mixing = "Linear"
+        MixingParameter = 0.5
+    }
+}
+
+Driver = {
+    CalculationType = "Jellium"
+}

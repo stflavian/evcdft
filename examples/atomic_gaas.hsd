@@ -1,0 +1,50 @@
+# EVC_DFT Input File - Atomic System (GaAs)
+# Demonstrates Phase 2A: Atomic systems with periodic boundary conditions
+# This is a minimal GaAs zincblende structure example
+
+Geometry = {
+    # Species types
+    TypeNames = { "Ga" "As" }
+    
+    # Atomic positions and types (type_index x y z)
+    # Units can be specified as [Angstrom] or [Bohr]
+    TypesAndCoordinates [Angstrom] = {
+        1  0.0          0.0          0.0
+        2  1.356773    1.356773    1.356773
+    }
+    
+    # Lattice vectors for zincblende GaAs (cubic)
+    # a = 5.6537 Angstrom for GaAs
+    LatticeVectors [Angstrom] = {
+        2.713546  2.713546  0.0
+        0.0       2.713546  2.713546
+        2.713546  0.0       2.713546
+    }
+    
+    # Periodic boundary conditions
+    Periodic = Yes
+}
+
+# Hamiltonian specification
+Hamiltonian = DFT {
+    XCFunctional = "LDA-PZ"
+}
+
+# Calculation options
+Options = {
+    EnergyCutoff [Ha] = 15.0
+    FFTGrid = (20, 20, 20)
+    
+    SCF {
+        MaxIter = 50
+        EnergyTolerance = 1e-8
+        DensityTolerance = 1e-8
+        Mixing = "Linear"
+        MixingParameter = 0.5
+    }
+}
+
+# Driver specification
+Driver = {
+    CalculationType = "Atomic"
+}
