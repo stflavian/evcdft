@@ -17,6 +17,36 @@ using ..Units
 export parse_input_file, run_from_input, InputConfig
 
 """
+    Print debug information about the parsed input configuration.
+    
+    Args:
+    - config: InputConfig to debug
+"""
+function debug_config(config::InputConfig)
+    println("\n" * "="^60)
+    println("DEBUG: Input Configuration")
+    println("="^60)
+    println("Geometry keys: ", keys(config.geometry))
+    if haskey(config.geometry, "LatticeVectors")
+        println("  LatticeVectors: ", config.geometry["LatticeVectors"])
+    end
+    if haskey(config.geometry, "ElectronGas")
+        println("  ElectronGas: ", config.geometry["ElectronGas"])
+    end
+    if haskey(config.geometry, "TypeNames")
+        println("  TypeNames: ", config.geometry["TypeNames"])
+    end
+    if haskey(config.geometry, "TypesAndCoordinates")
+        println("  TypesAndCoordinates: ", config.geometry["TypesAndCoordinates"])
+    end
+    println("Hamiltonian keys: ", keys(config.hamiltonian))
+    println("Options keys: ", keys(config.options))
+    println("Driver keys: ", keys(config.driver))
+    println("Net charge: ", config.net_charge)
+    println("="^60 * "\n")
+end
+
+"""
     Configuration structure extracted from input file.
     
     Fields:
@@ -49,6 +79,10 @@ end
 """
 function extract_config(root::HSDNode)::InputConfig
     config = InputConfig()
+    
+    # Debug: print parsed root structure
+    println("
+DEBUG: Root children: ", keys(root.children))
     
     # Extract Geometry block
     if haskey(root.children, "Geometry")
@@ -355,8 +389,15 @@ function validate_input(config::InputConfig)
         error("Geometry block is required")
     end
     
-    if !haskey(config.geometry, "LatticeVectors") && !haskey(config.geometry, "ElectronGas")
-        error("Geometry block must contain LatticeVectors or ElectronGas")
+    # For atomic systems, TypeNames + TypesAndCoordinates are valid
+    # For jellium, ElectronGas is valid
+    # For both, LatticeVectors can be present
+    has_atomic = haskey(config.geometry, "TypeNames") && haskey(config.geometry, "TypesAndCoordinates")
+    has_jellium = haskey(config.geometry, "ElectronGas")
+    has_lattice = haskey(config.geometry, "LatticeVectors")
+    
+    if !has_atomic && !has_jellium
+        error("Geometry block must contain ElectronGas or (TypeNames and TypesAndCoordinates)")
     end
     
     # For atomic systems

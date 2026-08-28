@@ -316,6 +316,20 @@ function parse_block(tokens::Vector{Token}, pos::Int, parent::HSDNode)::Tuple{HS
         elseif token.type == BEGIN_BLOCK
             # Anonymous block - should not happen in valid HSD
             pos += 1
+        elseif token.type == NUMBER
+            # Handle bare numbers in blocks (e.g., matrix rows without keys)
+            # Collect all consecutive numbers on this line as a vector
+            row_values = Float64[]
+            while pos <= length(tokens) && (tokens[pos].type == NUMBER || tokens[pos].type == COMMA)
+                if tokens[pos].type == NUMBER
+                    push!(row_values, parse(Float64, tokens[pos].value))
+                end
+                pos += 1
+            end
+            # Store as an anonymous child with index-based key
+            key = string(length(parent.children) + 1)
+            node = HSDNode(key, row_values)
+            parent.children[key] = node
         else
             pos += 1
         end
